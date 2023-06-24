@@ -1,6 +1,6 @@
-from multimetric.cls.base_calc import MetricBaseCalc
-from multimetric.cls.metric.operands import MetricBaseOperands
-from multimetric.cls.metric.operators import MetricBaseOperator
+from modernmetric.cls.base_calc import MetricBaseCalc
+from modernmetric.cls.metric.operands import MetricBaseOperands
+from modernmetric.cls.metric.operators import MetricBaseOperator
 import math
 
 

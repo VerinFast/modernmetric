@@ -1,4 +1,4 @@
-from multimetric.cls.base import MetricBase
+from modernmetric.cls.base import MetricBase
 
 
 class MetricBaseComments(MetricBase):

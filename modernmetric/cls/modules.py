@@ -1,14 +1,14 @@
-from multimetric.cls.calc.halstead import MetricBaseCalcHalstead
-from multimetric.cls.calc.maintenance import MetricBaseCalcMaintenanceIndex
-from multimetric.cls.calc.pylint import MetricBaseCalcPylint
-from multimetric.cls.calc.tiobe import MetricBaseCalcTIOBE
-from multimetric.cls.metric.comments import MetricBaseComments
-from multimetric.cls.metric.cyclomatic import MetricBaseCyclomaticComplexity
-from multimetric.cls.metric.fanout import MetricBaseFanout
-from multimetric.cls.metric.loc import MetricBaseLOC
-from multimetric.cls.metric.operands import MetricBaseOperands
-from multimetric.cls.metric.operators import MetricBaseOperator
-from multimetric.cls.stats.stats import MetricBaseStatsAverage
+from modernmetric.cls.calc.halstead import MetricBaseCalcHalstead
+from modernmetric.cls.calc.maintenance import MetricBaseCalcMaintenanceIndex
+from modernmetric.cls.calc.pylint import MetricBaseCalcPylint
+from modernmetric.cls.calc.tiobe import MetricBaseCalcTIOBE
+from modernmetric.cls.metric.comments import MetricBaseComments
+from modernmetric.cls.metric.cyclomatic import MetricBaseCyclomaticComplexity
+from modernmetric.cls.metric.fanout import MetricBaseFanout
+from modernmetric.cls.metric.loc import MetricBaseLOC
+from modernmetric.cls.metric.operands import MetricBaseOperands
+from modernmetric.cls.metric.operators import MetricBaseOperator
+from modernmetric.cls.stats.stats import MetricBaseStatsAverage
 
 
 def get_modules_metrics(args, **kwargs):

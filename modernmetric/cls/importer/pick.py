@@ -1,9 +1,9 @@
 import os
 import sys
 
-from multimetric.cls.importer.base import Importer
-from multimetric.cls.importer.mods.csv import ImporterCSV
-from multimetric.cls.importer.mods.json import ImporterJSON
+from modernmetric.cls.importer.base import Importer
+from modernmetric.cls.importer.mods.csv import ImporterCSV
+from modernmetric.cls.importer.mods.json import ImporterJSON
 
 
 def importer_pick(args, filearg):

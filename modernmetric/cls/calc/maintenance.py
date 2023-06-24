@@ -1,4 +1,4 @@
-from multimetric.cls.base_calc import MetricBaseCalc
+from modernmetric.cls.base_calc import MetricBaseCalc
 
 import math  # noqa: F401
 

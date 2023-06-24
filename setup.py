@@ -16,7 +16,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="modernmetric",
-    version="1.4.1",
+    version="1.0.0",
     author="Jason Nichols",
     author_email="jason@startupos.dev",
     description="Calculate code metrics in various languages",
@@ -27,7 +27,7 @@ setuptools.setup(
     install_requires=requirements,
         entry_points={
         "console_scripts": [
-            "multimetric = multimetric.__main__:main",
+            "modernmetric = modernmetric.__main__:main",
         ]
     },
     classifiers=[

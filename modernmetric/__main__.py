@@ -5,17 +5,17 @@ import textwrap
 import multiprocessing as mp
 
 
-from multimetric.cls.importer.pick import importer_pick
-from multimetric.cls.modules import get_additional_parser_args
-from multimetric.cls.modules import get_modules_calculated
-from multimetric.cls.modules import get_modules_metrics
-from multimetric.cls.modules import get_modules_stats
-from multimetric.fp import file_process
+from modernmetric.cls.importer.pick import importer_pick
+from modernmetric.cls.modules import get_additional_parser_args
+from modernmetric.cls.modules import get_modules_calculated
+from modernmetric.cls.modules import get_modules_metrics
+from modernmetric.cls.modules import get_modules_stats
+from modernmetric.fp import file_process
 
 def ArgParser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
-        prog="multimetric", description='Calculate code metrics in various languages',
+        prog="modernmetric", description='Calculate code metrics in various languages',
         epilog=textwrap.dedent("""
         Currently you could import files of the following types for --warn_* or --coverage
 

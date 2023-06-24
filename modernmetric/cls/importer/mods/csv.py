@@ -1,7 +1,7 @@
 import csv
 import sys
 
-from multimetric.cls.importer.base import Importer
+from modernmetric.cls.importer.base import Importer
 
 
 class ImporterCSV(Importer):

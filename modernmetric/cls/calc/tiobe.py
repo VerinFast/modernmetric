@@ -1,9 +1,9 @@
 import math
 
-from multimetric.cls.base_calc import MetricBaseCalc
-from multimetric.cls.metric.cyclomatic import MetricBaseCyclomaticComplexity
-from multimetric.cls.metric.fanout import MetricBaseFanout
-from multimetric.cls.metric.loc import MetricBaseLOC
+from modernmetric.cls.base_calc import MetricBaseCalc
+from modernmetric.cls.metric.cyclomatic import MetricBaseCyclomaticComplexity
+from modernmetric.cls.metric.fanout import MetricBaseFanout
+from modernmetric.cls.metric.loc import MetricBaseLOC
 
 def fail_safe(fn):
     def wrapper(*args, **kwargs):
