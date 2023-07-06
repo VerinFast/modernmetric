@@ -79,10 +79,9 @@ def ArgParser():
         default=True,
         help="Ignore unparseable files")
     get_additional_parser_args(parser)
-    #parser.add_argument("files", nargs='+', help="Files to parse", required=False)
 
-    parser.add_argument('--file', type=str, help='Path to the JSON file')
-    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths or JSON file path')
+    parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')
+    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')
 
     RUNARGS = parser.parse_args()
 
