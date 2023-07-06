@@ -11,7 +11,6 @@ from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
 
-filelist = []
 
 def ArgParser():
     parser = argparse.ArgumentParser(
