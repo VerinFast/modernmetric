@@ -4,13 +4,14 @@ import os
 import textwrap
 import multiprocessing as mp
 
-
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
+
+filelist = []
 
 def ArgParser():
     parser = argparse.ArgumentParser(
@@ -39,6 +40,15 @@ def ArgParser():
                  "severity": <severity>
              }
         """))
+
+    parser.add_argument('--file', type=str, help='Path to the JSON file with filelist')
+
+    # parser.add_argument(
+    #     "--file",
+    #     type=argparse.FileType('r'),
+    #     default=None,
+    #     help="JSON File with filelist")
+
     parser.add_argument(
         "--warn_compiler",
         default=None,
@@ -78,10 +88,22 @@ def ArgParser():
         default=True,
         help="Ignore unparseable files")
     get_additional_parser_args(parser)
-    parser.add_argument("files", nargs='+', help="Files to parse")
+    #parser.add_argument("files", nargs='+', help="Files to parse", required=False)
     RUNARGS = parser.parse_args()
-    # Turn all paths to abs-paths right here
-    RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
+
+    file_path = RUNARGS.file
+
+    if not file_path: # No file passed in, read filelist from command line
+        # Turn all paths to abs-paths right here
+        #RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
+        raise Exception("No filelist provided. Provide path to file list with --file=<path>")
+    else:
+        with open(file_path) as file:
+            data = json.load(file)
+            for file in data:
+                print("file")
+                print(file)
+                filelist.append(file["path"])
     return RUNARGS
 
 def main():
@@ -107,7 +129,7 @@ def main():
 
     with mp.Pool(processes=_args.jobs) as pool:
         results = [pool.apply(file_process, args=(
-            f, _args, _importer)) for f in _args.files]
+            f, _args, _importer)) for f in filelist]
 
     for x in results:
         _result["files"][x[1]] = x[0]
