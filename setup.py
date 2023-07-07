@@ -16,7 +16,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="modernmetric",
-    version="1.0.0",
+    version="1.0.2",
     author="Jason Nichols",
     author_email="jason@startupos.dev",
     description="Calculate code metrics in various languages",
