@@ -53,6 +53,8 @@ usage: modernmetric [-h] [--warn_compiler WARN_COMPILER]
                    [--warn_security WARN_SECURITY] [--coverage COVERAGE]
                    [--bugpredict {old,new}]
                    [--maintindex {sei,classic,microsoft}]
+                   [--file=path_to_filelist]
+                   AND/OR
                    files [files ...]
 
 Calculate code metrics in various languages
@@ -62,6 +64,14 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
+  --file=path_to_filelist
+                    Path to JSON filelist to scan. Format is:
+                    [
+                        {
+                            "name": "test.c",
+                            "path": "../testfiles/test.c"
+                        }
+                    ]
   --warn_compiler WARN_COMPILER
                         File(s) holding information about compiler warnings
   --warn_duplication WARN_DUPLICATION

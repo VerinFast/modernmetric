@@ -4,13 +4,13 @@ import os
 import textwrap
 import multiprocessing as mp
 
-
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
+
 
 def ArgParser():
     parser = argparse.ArgumentParser(
@@ -39,6 +39,7 @@ def ArgParser():
                  "severity": <severity>
              }
         """))
+
     parser.add_argument(
         "--warn_compiler",
         default=None,
@@ -78,8 +79,23 @@ def ArgParser():
         default=True,
         help="Ignore unparseable files")
     get_additional_parser_args(parser)
-    parser.add_argument("files", nargs='+', help="Files to parse")
+
+    parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')
+    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')
+
     RUNARGS = parser.parse_args()
+
+    file_paths = RUNARGS.files
+    input_file = RUNARGS.file
+
+    if not file_paths and not input_file: # No file passed in, read filelist from command line
+        raise Exception("No filelist provided. Provide path to file list with --file=<path>")
+    if input_file:
+        with open(input_file) as file:
+            data = json.load(file)
+            for file in data:
+                RUNARGS.files.append(file["path"])
+
     # Turn all paths to abs-paths right here
     RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
