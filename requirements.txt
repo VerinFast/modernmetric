@@ -1,2 +1,7 @@
 chardet>=5.1.0
+flake8
 pygments>=2.15.1
+pygments-tsx
+pygount
+pytest
+pytest-cov

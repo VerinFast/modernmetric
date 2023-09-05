@@ -1,7 +1,7 @@
 import subprocess
 import setuptools
 
-_long_description = "See https://github.com/startupos/multimetric for documentation"
+_long_description = "See https://github.com/startupos/modernmetric for documentation"
 _long_description_content_type = "text/plain"
 try:
     _long_description = subprocess.check_output(
@@ -16,16 +16,16 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="modernmetric",
-    version="1.0.2",
+    version="1.0.3",
     author="Jason Nichols",
     author_email="jason@startupos.dev",
     description="Calculate code metrics in various languages",
     long_description=_long_description,
     long_description_content_type=_long_description_content_type,
-    url="https://github.com/startupos/multimetric",
+    url="https://github.com/startupos/modernmetric",
     packages=setuptools.find_packages(),
     install_requires=requirements,
-        entry_points={
+    entry_points={
         "console_scripts": [
             "modernmetric = modernmetric.__main__:main",
         ]
