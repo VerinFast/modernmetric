@@ -6,6 +6,7 @@ from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
 
+
 def file_process(_file, _args, _importer):
     res = {}
     store = {}
