@@ -90,7 +90,6 @@ class MetricBaseLOC(MetricBase):
         self._internalstore[MetricBaseLOC.METRIC_ELOC] = self._metrics[MetricBaseLOC.METRIC_ELOC]
         self._internalstore[MetricBaseLOC.METRIC_SLOC] = self._metrics[MetricBaseLOC.METRIC_SLOC]
 
-
     def get_results_global(self, value_stores):
         _sum_LOC = sum([x[MetricBaseLOC.METRIC_LOC] for x in self._get_all_matching_store_objects(value_stores)])
         _sum_CLOC = sum([x[MetricBaseLOC.METRIC_CLOC] for x in self._get_all_matching_store_objects(value_stores)])

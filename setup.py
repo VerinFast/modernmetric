@@ -1,11 +1,28 @@
 import subprocess
 import setuptools
 
-_long_description = "See https://github.com/startupos/modernmetric for documentation"
+import os
+import datetime
+
+
+# Get the version from the git tag, and write to VERSION.
+ref = None
+if "GITHUB_REF" in os.environ:
+    ref = os.environ["GITHUB_REF"]
+
+if ref and ref is not None and ref.startswith("refs/tags/"):
+    version = ref.replace("refs/tags/", "")
+else:
+    version = datetime.datetime.now().strftime("%Y.%m.%d%H%M%S")
+
+print(version)
+
+_long_description = "See https://github.com/startupos/modernmetric for documentation"  # noqa:E501
 _long_description_content_type = "text/plain"
 try:
     _long_description = subprocess.check_output(
-        ["pandoc", "--from", "markdown", "--to", "rst", "README.md"]).decode("utf-8")
+        ["pandoc", "--from", "markdown", "--to", "rst", "README.md"]
+    ).decode("utf-8")
     _long_description_content_type = "text/x-rst"
 except (subprocess.CalledProcessError, FileNotFoundError):
     pass
@@ -16,7 +33,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="modernmetric",
-    version="1.0.3",
+    version=version,
     author="Jason Nichols",
     author_email="jason@startupos.dev",
     description="Calculate code metrics in various languages",
@@ -38,9 +55,6 @@ setuptools.setup(
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3",
