@@ -2,4 +2,4 @@ async function hello(arg:string){
     console.log("Hello", arg);
 }
 
-main();
+hello('world');
