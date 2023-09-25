@@ -1,10 +1,14 @@
 import sys
 import chardet
 from pygments import lexers
+from pygments_tsx.tsx import patch_pygments
 
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
+
+
+patch_pygments()
 
 
 def file_process(_file, _args, _importer):
