@@ -97,8 +97,12 @@ def ArgParser():
                 RUNARGS.files.append(file["path"])
 
     # Turn all paths to abs-paths right here
+    RUNARGS.oldfiles = {}
+    for x in RUNARGS.files:
+        RUNARGS.oldfiles[os.path.abspath(x)] = x
     RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
+
 
 def main():
     _args = ArgParser()
@@ -126,7 +130,8 @@ def main():
             f, _args, _importer)) for f in _args.files]
 
     for x in results:
-        _result["files"][x[1]] = x[0]
+        oldpath = _args.oldfiles[x[1]]
+        _result["files"][oldpath] = x[0]
 
     for y in _overallMetrics:
         _result["overall"].update(y.get_results_global([x[4] for x in results]))
