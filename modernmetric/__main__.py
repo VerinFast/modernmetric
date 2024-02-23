@@ -15,7 +15,8 @@ from modernmetric.fp import file_process
 def ArgParser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
-        prog="modernmetric", description='Calculate code metrics in various languages',
+        prog="modernmetric",
+        description='Calculate code metrics in various languages',
         epilog=textwrap.dedent("""
         Currently you could import files of the following types for --warn_* or --coverage
 
@@ -104,8 +105,11 @@ def ArgParser():
     return RUNARGS
 
 
-def main():
-    _args = ArgParser()
+def main(passArgs=None):
+    if passArgs:
+        _args = passArgs
+    else:
+        _args = ArgParser()
     _result = {"files": {}, "overall": {}}
 
     # Get importer
