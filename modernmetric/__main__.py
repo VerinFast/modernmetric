@@ -12,13 +12,13 @@ from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
 
 
-def ArgParser():
+def ArgParser(custom_args=None):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         prog="modernmetric",
         description='Calculate code metrics in various languages',
         epilog=textwrap.dedent("""
-        Currently you could import files of the following types for --warn_* or --coverage
+        Currently you could import files of the following types for --warn_* or --coverage  # noqa: E501
 
         Following information can be read
 
@@ -40,7 +40,10 @@ def ArgParser():
                  "severity": <severity>
              }
         """))
-
+    parser.add_argument(
+        "--output_file",
+        default=None,
+        help="File to write the output to")
     parser.add_argument(
         "--warn_compiler",
         default=None,
@@ -64,7 +67,7 @@ def ArgParser():
     parser.add_argument(
         "--coverage",
         default=None,
-        help="File(s) with compiler warningsFile(s) holding information about testing coverage")
+        help="File(s) with compiler warningsFile(s) holding information about testing coverage")  # noqa: E501
     parser.add_argument(
         "--dump",
         default=False,
@@ -81,16 +84,19 @@ def ArgParser():
         help="Ignore unparseable files")
     get_additional_parser_args(parser)
 
-    parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')
-    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')
+    parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')  # noqa: E501
+    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')  # noqa: E501
 
-    RUNARGS = parser.parse_args()
+    if custom_args:
+        RUNARGS = parser.parse_args(custom_args)
+    else:
+        RUNARGS = parser.parse_args()
 
     file_paths = RUNARGS.files
     input_file = RUNARGS.file
 
-    if not file_paths and not input_file: # No file passed in, read filelist from command line
-        raise Exception("No filelist provided. Provide path to file list with --file=<path>")
+    if not file_paths and not input_file:  # No file passed in, read filelist from command line  # noqa: E501
+        raise Exception("No filelist provided. Provide path to file list with --file=<path>")  # noqa: E501
     if input_file:
         with open(input_file) as file:
             data = json.load(file)
@@ -104,10 +110,13 @@ def ArgParser():
     RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
 
+# custom_args is an optional list of strings args,
+# e.g. ["--file=path/to/filelist.json"]
 
-def main(passArgs=None):
-    if passArgs:
-        _args = passArgs
+
+def main(custom_args=None):
+    if custom_args:
+        _args = ArgParser(custom_args)
     else:
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
@@ -138,14 +147,17 @@ def main(passArgs=None):
         _result["files"][oldpath] = x[0]
 
     for y in _overallMetrics:
-        _result["overall"].update(y.get_results_global([x[4] for x in results]))
+        _result["overall"].update(y.get_results_global([x[4] for x in results]))  # noqa: E501
     for y in _overallCalc:
         _result["overall"].update(y.get_results(_result["overall"]))
     for m in get_modules_stats(_args, **_importer):
         _result = m.get_results(_result, "files", "overall")
-    if not _args.dump:
+    if _args.dump:
         # Output
         print(json.dumps(_result, indent=2, sort_keys=True))
+    if _args.output_file:
+        with open(_args.output_file, "w") as f:
+            f.write(json.dumps(_result, indent=2, sort_keys=True))
 
 
 if __name__ == '__main__':
