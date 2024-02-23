@@ -64,7 +64,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --file=path_to_filelist
+  --input_file=path_to_filelist
                     Path to JSON filelist to scan. Format is:
                     [
                         {
@@ -72,6 +72,7 @@ optional arguments:
                             "path": "../testfiles/test.c"
                         }
                     ]
+  --output_file=path to output, optional
   --warn_compiler WARN_COMPILER
                         File(s) holding information about compiler warnings
   --warn_duplication WARN_DUPLICATION
