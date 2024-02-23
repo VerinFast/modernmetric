@@ -72,6 +72,7 @@ optional arguments:
                             "path": "../testfiles/test.c"
                         }
                     ]
+  --output_file=path to output, optional
   --warn_compiler WARN_COMPILER
                         File(s) holding information about compiler warnings
   --warn_duplication WARN_DUPLICATION
