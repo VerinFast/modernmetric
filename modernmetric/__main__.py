@@ -41,10 +41,6 @@ def ArgParser(custom_args=None):
              }
         """))
     parser.add_argument(
-        "--input_file",
-        default=None,
-        help="File holding information about files to process")
-    parser.add_argument(
         "--output_file",
         default=None,
         help="File to write the output to")
@@ -97,7 +93,7 @@ def ArgParser(custom_args=None):
         RUNARGS = parser.parse_args()
 
     file_paths = RUNARGS.files
-    input_file = RUNARGS.input_file
+    input_file = RUNARGS.file
 
     if not file_paths and not input_file:  # No file passed in, read filelist from command line  # noqa: E501
         raise Exception("No filelist provided. Provide path to file list with --file=<path>")  # noqa: E501

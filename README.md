@@ -64,7 +64,7 @@ positional arguments:
 
 optional arguments:
   -h, --help            show this help message and exit
-  --input_file=path_to_filelist
+  --file=path_to_filelist
                     Path to JSON filelist to scan. Format is:
                     [
                         {
