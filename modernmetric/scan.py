@@ -114,6 +114,9 @@ def ArgParser(custom_args=None):
     RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
 
+# custom_args is an optional list of strings args,
+# e.g. ["--file=path/to/filelist.json"]
+
 
 def main(custom_args=None):
     if custom_args:
