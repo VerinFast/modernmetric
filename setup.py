@@ -17,7 +17,7 @@ else:
 
 print(version)
 
-_long_description = "See https://github.com/startupos/modernmetric for documentation"  # noqa:E501
+_long_description = "See https://github.com/verinfast/modernmetric for documentation"  # noqa:E501
 _long_description_content_type = "text/plain"
 try:
     _long_description = subprocess.check_output(
@@ -35,11 +35,11 @@ setuptools.setup(
     name="modernmetric",
     version=version,
     author="Jason Nichols",
-    author_email="jason@startupos.dev",
+    author_email="github@verinfast.com",
     description="Calculate code metrics in various languages",
     long_description=_long_description,
     long_description_content_type=_long_description_content_type,
-    url="https://github.com/startupos/modernmetric",
+    url="https://github.com/verinfast/modernmetric",
     packages=setuptools.find_packages(),
     install_requires=requirements,
     entry_points={
