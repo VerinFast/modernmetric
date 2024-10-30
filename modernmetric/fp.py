@@ -22,7 +22,7 @@ def file_process(_file, _args, _importer):
             print("Processing unknown file type: " + _file, file=sys.stderr)
             return (res, _file, "unknown", [], store)
         else:
-            raise
+            raise e
     try:
         with open(_file, "rb") as i:
             _cnt = i.read()

@@ -10,6 +10,7 @@ from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
+from modernmetric.license import report
 
 
 def ArgParser(custom_args=None):
@@ -114,7 +115,12 @@ def ArgParser(custom_args=None):
 # e.g. ["--file=path/to/filelist.json"]
 
 
-def main(custom_args=None):
+def main(custom_args=None, license_identifier: str | int = None):
+    if license_identifier:
+        report(
+            identifier=license_identifier,
+            product="modernmetric"
+        )
     if custom_args:
         _args = ArgParser(custom_args)
     else:
