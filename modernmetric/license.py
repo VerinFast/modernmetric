@@ -31,7 +31,7 @@ def report(identifier: str | int, product: str):
 
     response = requestx.post(
         f"https://logger.verinfast.com/logger?license=true&product={str(product)}",  # noqa: E501
-        data=data,
+        json=data,
         headers=headers
     )
 
