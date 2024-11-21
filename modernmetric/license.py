@@ -3,7 +3,7 @@ import httpx
 requestx = httpx.Client(http2=True, timeout=None)
 
 
-def report(identifier: str | int, product: str):
+def report(identifier: str | int, product: str, die: bool = False):
     """
     License reporter reports back usage of some commercial features to help
     keep users safe.
@@ -29,10 +29,15 @@ def report(identifier: str | int, product: str):
         "product": product
     }
 
-    response = requestx.post(
-        f"https://logger.verinfast.com/logger?license=true&product={str(product)}",  # noqa: E501
-        json=data,
-        headers=headers
-    )
+    response = None
+    try:
+        response = requestx.post(
+            f"https://logger.verinfast.com/logger?license=true&product={str(product)}",  # noqa: E501
+            json=data,
+            headers=headers
+        )
+    except Exception as e:  # noqa: E722
+        if die:
+            raise e
 
     return response
