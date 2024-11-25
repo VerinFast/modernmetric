@@ -11,6 +11,7 @@ from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
 from modernmetric.license import report
+from modernmetric.cache import ModernMetricCache
 
 
 def ArgParser(custom_args=None):
@@ -83,6 +84,16 @@ def ArgParser(custom_args=None):
         "--ignore_lexer_errors",
         default=True,
         help="Ignore unparseable files")
+    parser.add_argument(
+        "--cache-dir",
+        default=".modernmetric_cache",
+        help="Directory to store cache files (default: .modernmetric_cache)"
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable caching of results"
+    )
     get_additional_parser_args(parser)
 
     parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')  # noqa: E501
@@ -127,6 +138,8 @@ def main(custom_args=None, license_identifier: str | int = None):
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
 
+    cache = None if _args.no_cache else ModernMetricCache(_args.cache_dir)
+
     # Get importer
     _importer = {}
     _importer["import_compiler"] = importer_pick(_args, _args.warn_compiler)
@@ -146,7 +159,7 @@ def main(custom_args=None, license_identifier: str | int = None):
 
     with mp.Pool(processes=_args.jobs) as pool:
         results = [pool.apply(file_process, args=(
-            f, _args, _importer)) for f in _args.files]
+            f, _args, _importer, cache)) for f in _args.files]
 
     for x in results:
         oldpath = _args.oldfiles[x[1]]
