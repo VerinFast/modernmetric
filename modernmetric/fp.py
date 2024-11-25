@@ -3,7 +3,7 @@ import chardet
 from typing import Optional
 from pygments import lexers
 from pygments_tsx.tsx import patch_pygments
-from .cache import ModernMetricCache
+from cachehash.main import Cache
 
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
@@ -16,14 +16,23 @@ def file_process(
     _file,
     _args,
     _importer,
-    cache: Optional[ModernMetricCache] = None
+    cache: Optional[Cache] = None
 ):
-    """Process a file, using cache if provided"""
-    # check for cached scan result first
+    """Process a file, using cachehash if available"""
+    # Try to get cached result first
     if cache is not None and not getattr(_args, 'no_cache', False):
-        cached_result = cache.get_cached_result(_file)
-        if cached_result is not None:
-            return cached_result
+        try:
+            cached_result = cache.get(_file)
+            if cached_result is not None:
+                return (
+                    cached_result['res'],
+                    cached_result['file'],
+                    cached_result['lexer_name'],
+                    cached_result['tokens'],
+                    cached_result['store']
+                )
+        except Exception as e:
+            print(f"Cache error: {e}", file=sys.stderr)
 
     res = {}
     store = {}
@@ -67,7 +76,7 @@ def file_process(
 
         # Store in cache if available
         if cache is not None and not getattr(_args, 'no_cache', False):
-            cache.store_result(_file, result)
+            cache.store(_file, result)
 
         return result
 

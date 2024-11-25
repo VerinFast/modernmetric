@@ -3,6 +3,8 @@ import json
 import os
 import textwrap
 import multiprocessing as mp
+from pathlib import Path
+from cachehash.main import Cache
 
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
@@ -11,7 +13,6 @@ from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
 from modernmetric.license import report
-from modernmetric.cache import ModernMetricCache
 
 
 def ArgParser(custom_args=None):
@@ -99,6 +100,18 @@ def ArgParser(custom_args=None):
     parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')  # noqa: E501
     parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')  # noqa: E501
 
+    # Add cachehash arguments
+    parser.add_argument(
+        "--cache-db",
+        default="modernmetric.db",
+        help="SQLite database file for caching (default: modernmetric.db)"
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable result caching"
+    )
+
     if custom_args:
         RUNARGS = parser.parse_args(custom_args)
     else:
@@ -137,8 +150,7 @@ def main(custom_args=None, license_identifier: str | int = None):
     else:
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
-
-    cache = None if _args.no_cache else ModernMetricCache(_args.cache_dir)
+    cache = (None if _args.no_cache else Cache(Path(_args.cache_db), "modernmetric"))
 
     # Get importer
     _importer = {}
