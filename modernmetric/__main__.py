@@ -3,6 +3,8 @@ import json
 import os
 import textwrap
 import multiprocessing as mp
+from pathlib import Path
+from cachehash.main import Cache
 
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
@@ -83,10 +85,32 @@ def ArgParser(custom_args=None):
         "--ignore_lexer_errors",
         default=True,
         help="Ignore unparseable files")
+    parser.add_argument(
+        "--cache-dir",
+        default=".modernmetric_cache",
+        help="Directory to store cache files (default: .modernmetric_cache)"
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable caching of results"
+    )
     get_additional_parser_args(parser)
 
     parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')  # noqa: E501
     parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')  # noqa: E501
+
+    # Add cachehash arguments
+    parser.add_argument(
+        "--cache-db",
+        default="modernmetric.db",
+        help="SQLite database file for caching (default: modernmetric.db)"
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Disable result caching"
+    )
 
     if custom_args:
         RUNARGS = parser.parse_args(custom_args)
@@ -126,6 +150,7 @@ def main(custom_args=None, license_identifier: str | int = None):
     else:
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
+    cache = (None if _args.no_cache else Cache(Path(_args.cache_db), "modernmetric"))
 
     # Get importer
     _importer = {}
@@ -146,7 +171,7 @@ def main(custom_args=None, license_identifier: str | int = None):
 
     with mp.Pool(processes=_args.jobs) as pool:
         results = [pool.apply(file_process, args=(
-            f, _args, _importer)) for f in _args.files]
+            f, _args, _importer, cache)) for f in _args.files]
 
     for x in results:
         oldpath = _args.oldfiles[x[1]]
