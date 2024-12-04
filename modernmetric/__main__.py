@@ -85,22 +85,28 @@ def ArgParser(custom_args=None):
         "--ignore_lexer_errors",
         default=True,
         help="Ignore unparseable files")
+
+    parser.add_argument(
+        '--file', 
+        type=str, 
+        help='Path to the JSON file list of file paths'
+    )
+    
+    parser.add_argument(
+        'files', 
+        metavar='file', 
+        type=str, 
+        nargs='*', 
+        help='List of file paths'
+    )
+
+    # Add cachehash arguments
     parser.add_argument(
         "--cache-dir",
         default=".modernmetric_cache",
         help="Directory to store cache files (default: .modernmetric_cache)"
     )
-    parser.add_argument(
-        "--no-cache",
-        action="store_true",
-        help="Disable caching of results"
-    )
-    get_additional_parser_args(parser)
 
-    parser.add_argument('--file', type=str, help='Path to the JSON file list of file paths')  # noqa: E501
-    parser.add_argument('files', metavar='file', type=str, nargs='*', help='List of file paths')  # noqa: E501
-
-    # Add cachehash arguments
     parser.add_argument(
         "--cache-db",
         default="modernmetric.db",
@@ -111,6 +117,8 @@ def ArgParser(custom_args=None):
         action="store_true",
         help="Disable result caching"
     )
+
+    get_additional_parser_args(parser)
 
     if custom_args:
         RUNARGS = parser.parse_args(custom_args)
