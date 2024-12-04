@@ -1,6 +1,6 @@
 chardet>=5.1.0
 flake8
-httpx[http2]~=0.27.2
+httpx[http2]~=0.28.0
 pygments>=2.15.1
 pygments-tsx>=1.0.1
 pygount
