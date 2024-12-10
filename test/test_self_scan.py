@@ -39,7 +39,7 @@ def test_scan_self():
 
     # Process files
     args = TestArgs()
-    importer = {} 
+    importer = {}
     results = []
 
     expected_metrics = {}
