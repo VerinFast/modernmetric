@@ -33,7 +33,7 @@ jobs:
           
       - name: Run tests
         run: |
-          pytest tests/test_self_scan.py -v
+          pytest test/test_self_scan.py -v
           modernmetric-test
 
       - name: Upload coverage to Codecov

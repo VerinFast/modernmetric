@@ -42,6 +42,7 @@ def test_scan_self():
     importer = {} 
     results = []
 
+    expected_metrics = {}
     for file in python_files:
         result = file_process(file, args, importer)
         results.append(result)
