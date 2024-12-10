@@ -78,7 +78,7 @@ def test_scan_self():
             assert isinstance(result[0][metric], expected_type), \
                 f"Metric {metric} has wrong type. Expected {expected_type}, got {type(result[0][metric])}"
 
-            # sanity checks
+            # basic sanity checks
             if expected_type in (int, float):
                 assert result[0][metric] >= 0, f"Metric {metric} should be non-negative"
 
@@ -105,7 +105,7 @@ def test_scan_self():
         if expected_type in (int, float):
             assert overall_results[metric] >= 0, f"Aggregate metric {metric} should be non-negative"
 
-            # For metrics that should sum up
+            # For metrics that should sum up --
             if metric in ['loc', 'code_loc', 'documentation_loc', 'string_loc', 'empty_loc']:
                 file_sum = sum(result[0][metric] for result in results if result[0])
                 assert overall_results[metric] == file_sum, \
