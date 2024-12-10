@@ -40,11 +40,12 @@ setuptools.setup(
     long_description=_long_description,
     long_description_content_type=_long_description_content_type,
     url="https://github.com/verinfast/modernmetric",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(include=['modernmetric*', 'test*']),
     install_requires=requirements,
     entry_points={
         "console_scripts": [
             "modernmetric = modernmetric.__main__:main",
+            "modernmetric-test=test.test_self_scan:main",
         ]
     },
     classifiers=[
