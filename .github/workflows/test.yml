@@ -1,11 +1,12 @@
 name: "Run Tests"
+
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -14,29 +15,38 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-    
+
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
-          pip install -e .
-          
-      - name: Run tests
-        run: |
-          pytest test/test_self_scan.py -v
-          modernmetric-test
+          pip install -r requirements.txt
+
+      - name: Run Pytest
+        run: pytest test/test_self_scan.py -v
+
+      - name: Run Modern Metric Test
+        run: modernmetric-test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
+          files: coverage.xml
           fail_ci_if_error: true
