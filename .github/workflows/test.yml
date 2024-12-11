@@ -41,13 +41,3 @@ jobs:
 
       - name: Run Pytest
         run: pytest test/test_self_scan.py -v
-
-    # What was this for?
-    #   - name: Run Modern Metric Test
-    #     run: modernmetric-test
-
-    #   - name: Upload coverage to Codecov
-    #     uses: codecov/codecov-action@v4
-    #     with:
-    #       files: coverage.xml
-    #       fail_ci_if_error: true
