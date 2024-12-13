@@ -13,8 +13,8 @@ jobs:
   unit-tests:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-latest]
+        python-version: ["3.12"]
 
     runs-on: ${{ matrix.os }}
 
@@ -40,4 +40,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Pytest with coverage
-        run: pytest test/test_self_scan.py -v
+        run: pytest test/test_self_scan.py --cov=modernmetric --cov-report xml:coverage.xml -v
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
