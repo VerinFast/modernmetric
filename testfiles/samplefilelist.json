@@ -1,7 +1,7 @@
 [
     {
         "name": "test.c",
-        "path": "../testfiles/test.c"
+        "path": "testfiles/test.c"
     },
     {
         "name": "test.go",
