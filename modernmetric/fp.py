@@ -85,7 +85,7 @@ def file_process(
         print(f"Result: {result}")
         return result
 
-    except Exception:
-        print(f"Error processing {_file}")
+    except Exception as e:
+        print(f"Error processing {e}")
         tokens = []
         return (res, _file, _lexer.name, tokens, store)
