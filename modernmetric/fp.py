@@ -34,6 +34,7 @@ def file_process(
         except Exception as e:
             print(f"Cache error: {e}", file=sys.stderr)
 
+    print(f"Processing file: {_file}")
     res = {}
     store = {}
     try:
@@ -77,7 +78,8 @@ def file_process(
         # Store in cache if available
         if cache is not None and not getattr(_args, 'no_cache', False):
             cache.store(_file, result)
-
+        print(f"Processed file: {_file}")
+        print(f"Result: {result}")
         return result
 
     except Exception:
