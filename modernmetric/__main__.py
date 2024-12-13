@@ -147,7 +147,7 @@ def ArgParser(custom_args=None):
 # e.g. ["--file=path/to/filelist.json"]
 
 
-def main(custom_args=None, license_identifier: str | int = None):
+def main(custom_args=None, license_identifier: "str | int" = None):
     if license_identifier:
         report(
             identifier=license_identifier,
