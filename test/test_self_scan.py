@@ -140,6 +140,7 @@ def test_filelist_scan():
     modernmetric(custom_args=custom_args, license_identifier='unit_test')
     with open(stats_output_file, 'r') as f:
         stats = json.load(f)
+    print(stats)
     files = stats['files']
     assert files is not None
     assert files["../testfiles/test.c"]["loc"] == 25
