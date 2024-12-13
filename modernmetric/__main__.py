@@ -3,6 +3,7 @@ import json
 import os
 import textwrap
 import multiprocessing as mp
+from typing import Union
 # from pathlib import Path
 # from cachehash.main import Cache
 
@@ -147,7 +148,7 @@ def ArgParser(custom_args=None):
 # e.g. ["--file=path/to/filelist.json"]
 
 
-def main(custom_args=None, license_identifier: "str | int" = None):
+def main(custom_args=None, license_identifier: Union[int, str] = None):
     if license_identifier:
         report(
             identifier=license_identifier,

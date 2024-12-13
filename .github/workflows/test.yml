@@ -39,5 +39,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Pytest with coverage
+      - name: Run Pytest
         run: pytest test/test_self_scan.py -v
