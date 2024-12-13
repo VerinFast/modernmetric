@@ -7,7 +7,7 @@ from modernmetric.cls.modules import (
 from pathlib import Path
 
 
-class TestArgs:
+class MockArgs:
     """Mock args class for testing"""
     def __init__(self):
         self.ignore_lexer_errors = True
@@ -38,8 +38,8 @@ def test_scan_self():
     assert len(python_files) > 0, "No Python files found to analyze"
 
     # Process files
-    args = TestArgs()
-    importer = {} 
+    args = MockArgs()
+    importer = {}
     results = []
 
     expected_metrics = {}
@@ -76,11 +76,13 @@ def test_scan_self():
         for metric, expected_type in expected_metrics.items():
             assert metric in result[0], f"Missing metric: {metric}"
             assert isinstance(result[0][metric], expected_type), \
-                f"Metric {metric} has wrong type. Expected {expected_type}, got {type(result[0][metric])}"
+                (f"Metric {metric} has wrong type. Expected {expected_type}, "
+                 f"got {type(result[0][metric])}")
 
             # sanity checks
             if expected_type in (int, float):
-                assert result[0][metric] >= 0, f"Metric {metric} should be non-negative"
+                assert result[0][metric] >= 0, \
+                    f"Metric {metric} should be non-negative"
 
     # Test aggregate metrics
     overall_metrics = get_modules_metrics(args, **importer)
@@ -98,16 +100,26 @@ def test_scan_self():
     # Test expected aggregate results
     for metric, expected_type in expected_metrics.items():
         assert metric in overall_results, f"Missing aggregate metric: {metric}"
-        assert isinstance(overall_results[metric], expected_type), \
-            f"Aggregate metric {metric} has wrong type. Expected {expected_type}, got {type(overall_results[metric])}"
+        assert isinstance(overall_results[metric], expected_type), (
+            f"Aggregate metric {metric} has wrong type. "
+            f"Expected {expected_type}, "
+            f"got {type(overall_results[metric])}"
+        )
 
         # Verify aggregate values make sense
         if expected_type in (int, float):
-            assert overall_results[metric] >= 0, f"Aggregate metric {metric} should be non-negative"
+            assert overall_results[metric] >= 0, (
+                f"Aggregate metric {metric} should be non-negative"
+            )
 
             # For metrics that should sum up
-            if metric in ['loc', 'code_loc', 'documentation_loc', 'string_loc', 'empty_loc']:
-                file_sum = sum(result[0][metric] for result in results if result[0])
+            if metric in [
+                'loc', 'code_loc', 'documentation_loc',
+                'string_loc', 'empty_loc'
+            ]:
+                file_sum = sum(
+                    result[0][metric] for result in results if result[0]
+                )
                 assert overall_results[metric] == file_sum, \
                     f"Aggregate {metric} should equal sum of individual values"
 
