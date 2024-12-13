@@ -132,6 +132,10 @@ def test_filelist_scan():
     stats_input_file = os.path.join(
         project_root, 'testfiles', 'samplefilelist.json'
     )
+    print(stats_input_file)
+    with open(stats_input_file, 'r') as f:
+        data = json.load(f)
+    print(data)
     stats_output_file = os.path.join(curr_dir, "test.stats.json")
     custom_args = [
         f"--file={stats_input_file}",
