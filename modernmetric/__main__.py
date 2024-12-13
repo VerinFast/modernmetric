@@ -3,8 +3,8 @@ import json
 import os
 import textwrap
 import multiprocessing as mp
-from pathlib import Path
-from cachehash.main import Cache
+# from pathlib import Path
+# from cachehash.main import Cache
 
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
@@ -87,16 +87,16 @@ def ArgParser(custom_args=None):
         help="Ignore unparseable files")
 
     parser.add_argument(
-        '--file', 
-        type=str, 
+        '--file',
+        type=str,
         help='Path to the JSON file list of file paths'
     )
-    
+
     parser.add_argument(
-        'files', 
-        metavar='file', 
-        type=str, 
-        nargs='*', 
+        'files',
+        metavar='file',
+        type=str,
+        nargs='*',
         help='List of file paths'
     )
 
@@ -158,7 +158,8 @@ def main(custom_args=None, license_identifier: str | int = None):
     else:
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
-    cache = (None if _args.no_cache else Cache(Path(_args.cache_db), "modernmetric"))
+    # cache = (None if _args.no_cache else Cache(Path(_args.cache_db),
+    #  "modernmetric"))
 
     # Get importer
     _importer = {}
@@ -179,7 +180,7 @@ def main(custom_args=None, license_identifier: str | int = None):
 
     with mp.Pool(processes=_args.jobs) as pool:
         results = [pool.apply(file_process, args=(
-            f, _args, _importer, cache)) for f in _args.files]
+            f, _args, _importer)) for f in _args.files]
 
     for x in results:
         oldpath = _args.oldfiles[x[1]]
