@@ -40,7 +40,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run Pytest with coverage
-        run: pytest test/test_self_scan.py --cov=your_package_name --cov-report xml:coverage.xml -v
+        run: pytest test/test_self_scan.py --cov=modernmetric --cov-report xml:coverage.xml -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
