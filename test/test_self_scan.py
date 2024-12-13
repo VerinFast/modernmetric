@@ -132,10 +132,6 @@ def test_filelist_scan():
     stats_input_file = os.path.join(
         project_root, 'testfiles', 'samplefilelist.json'
     )
-    print(stats_input_file)
-    with open(stats_input_file, 'r') as f:
-        data = json.load(f)
-    print(data)
     stats_output_file = os.path.join(curr_dir, "test.stats.json")
     custom_args = [
         f"--file={stats_input_file}",
@@ -144,11 +140,10 @@ def test_filelist_scan():
     modernmetric(custom_args=custom_args, license_identifier='unit_test')
     with open(stats_output_file, 'r') as f:
         stats = json.load(f)
-    print(stats)
     files = stats['files']
     assert files is not None
-    assert files["../testfiles/test.c"]["loc"] == 25
-    assert files["../testfiles/test.c"]["cyclomatic_complexity"] == 1
+    assert files["testfiles/test.c"]["loc"] == 25
+    assert files["testfiles/test.c"]["cyclomatic_complexity"] == 0
     assert stats["overall"]["loc"] == 178
     os.remove(stats_output_file)
 

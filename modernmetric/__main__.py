@@ -141,7 +141,6 @@ def ArgParser(custom_args=None):
     for x in RUNARGS.files:
         RUNARGS.oldfiles[os.path.abspath(x)] = x
     RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
-    print(RUNARGS.files)
     return RUNARGS
 
 # custom_args is an optional list of strings args,

@@ -34,13 +34,11 @@ def file_process(
         except Exception as e:
             print(f"Cache error: {e}", file=sys.stderr)
 
-    print(f"Processing file: {_file}")
     res = {}
     store = {}
     try:
         _lexer = lexers.get_lexer_for_filename(_file)
     except Exception as e:
-        print(f"Error getting lexer for {_file}: {e}")
         if _args.ignore_lexer_errors:
             # Printing to stderr since we write results to STDOUT
             print("Processing unknown file type: " + _file, file=sys.stderr)
@@ -57,8 +55,6 @@ def file_process(
         _localImporter = {k: FilteredImporter(
             v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
-
-        print("here")
 
         if _args.dump:
             for x in tokens:
@@ -81,11 +77,8 @@ def file_process(
         # Store in cache if available
         if cache is not None and not getattr(_args, 'no_cache', False):
             cache.store(_file, result)
-        print(f"Processed file: {_file}")
-        print(f"Result: {result}")
         return result
 
-    except Exception as e:
-        print(f"Error processing {e}")
+    except Exception:
         tokens = []
         return (res, _file, _lexer.name, tokens, store)
