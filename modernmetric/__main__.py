@@ -130,11 +130,20 @@ def ArgParser(custom_args=None):
 
     if not file_paths and not input_file:  # No file passed in, read filelist from command line  # noqa: E501
         raise Exception("No filelist provided. Provide path to file list with --file=<path>")  # noqa: E501
+
     if input_file:
         with open(input_file) as file:
             data = json.load(file)
-            for file in data:
-                RUNARGS.files.append(file["path"])
+            if isinstance(data, dict) and "files" in data:
+                for file in data["files"]:
+                    RUNARGS.files.append(file["path"])
+            elif isinstance(data, list):
+                if all(isinstance(item, dict) and "path" in
+                       item for item in data):
+                    for file in data:
+                        RUNARGS.files.append(file["path"])
+                else:
+                    RUNARGS.files.extend(data)
 
     # Turn all paths to abs-paths right here
     RUNARGS.oldfiles = {}
@@ -145,6 +154,12 @@ def ArgParser(custom_args=None):
 
 # custom_args is an optional list of strings args,
 # e.g. ["--file=path/to/filelist.json"]
+
+
+def process_file(f, args, importer):
+    cache = None if args.no_cache else Cache(Path(args.cache_db),
+                                             "modernmetric")
+    return file_process(f, args, importer, cache)
 
 
 def main(custom_args=None, license_identifier: str | int = None):
@@ -158,7 +173,6 @@ def main(custom_args=None, license_identifier: str | int = None):
     else:
         _args = ArgParser()
     _result = {"files": {}, "overall": {}}
-    cache = (None if _args.no_cache else Cache(Path(_args.cache_db), "modernmetric"))
 
     # Get importer
     _importer = {}
@@ -178,8 +192,8 @@ def main(custom_args=None, license_identifier: str | int = None):
     _overallCalc = get_modules_calculated(_args, **_importer)
 
     with mp.Pool(processes=_args.jobs) as pool:
-        results = [pool.apply(file_process, args=(
-            f, _args, _importer, cache)) for f in _args.files]
+        results = [pool.apply(process_file,
+                              args=(f, _args, _importer)) for f in _args.files]
 
     for x in results:
         oldpath = _args.oldfiles[x[1]]
