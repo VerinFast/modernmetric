@@ -1,4 +1,5 @@
 import os
+from cachehash.main import Cache
 from modernmetric.fp import file_process
 from modernmetric.cls.modules import (
     get_modules_metrics,
@@ -20,11 +21,13 @@ class TestArgs:
         self.warn_functional = None
         self.warn_standard = None
         self.warn_security = None
+        self.no_cache = False
+        self.cache_db = "modernmetric.db"  # Default cache database name
+        self.cache_dir = ".modernmetric_cache"  # Default cache directory
 
 
 def test_scan_self():
     """Test that modernmetric can scan its own codebase"""
-
     # Get modernmetric's root directory
     root_dir = Path(__file__).parent.parent / 'modernmetric'
 
@@ -39,12 +42,14 @@ def test_scan_self():
 
     # Process files
     args = TestArgs()
-    importer = {} 
+    importer = {}
     results = []
+
+    cache = Cache(Path(args.cache_db), "modernmetric")
 
     expected_metrics = {}
     for file in python_files:
-        result = file_process(file, args, importer)
+        result = file_process(file, args, importer, cache)
         results.append(result)
 
         # Print metrics for debugging
@@ -75,12 +80,14 @@ def test_scan_self():
 
         for metric, expected_type in expected_metrics.items():
             assert metric in result[0], f"Missing metric: {metric}"
-            assert isinstance(result[0][metric], expected_type), \
-                f"Metric {metric} has wrong type. Expected {expected_type}, got {type(result[0][metric])}"
+            assert isinstance(result[0][metric], expected_type), (
+                f"Metric {metric} has wrong type. Expected {expected_type}, "
+                f"got {type(result[0][metric])}")
 
             # sanity checks
             if expected_type in (int, float):
-                assert result[0][metric] >= 0, f"Metric {metric} should be non-negative"
+                assert result[0][metric] >= 0, (
+                    f"Metric {metric} should be non-negative")
 
     # Test aggregate metrics
     overall_metrics = get_modules_metrics(args, **importer)
@@ -97,19 +104,24 @@ def test_scan_self():
 
     # Test expected aggregate results
     for metric, expected_type in expected_metrics.items():
-        assert metric in overall_results, f"Missing aggregate metric: {metric}"
-        assert isinstance(overall_results[metric], expected_type), \
-            f"Aggregate metric {metric} has wrong type. Expected {expected_type}, got {type(overall_results[metric])}"
+        assert metric in overall_results, (
+            f"Missing aggregate metric: {metric}")
+        assert isinstance(overall_results[metric], expected_type), (
+            f"Aggregate metric {metric} has wrong type. "
+            f"Expected {expected_type}, got {type(overall_results[metric])}")
 
         # Verify aggregate values make sense
         if expected_type in (int, float):
-            assert overall_results[metric] >= 0, f"Aggregate metric {metric} should be non-negative"
-
+            assert overall_results[metric] >= 0, (
+                f"Aggregate metric {metric} should be non-negative")
             # For metrics that should sum up
-            if metric in ['loc', 'code_loc', 'documentation_loc', 'string_loc', 'empty_loc']:
-                file_sum = sum(result[0][metric] for result in results if result[0])
-                assert overall_results[metric] == file_sum, \
-                    f"Aggregate {metric} should equal sum of individual values"
+            if metric in ['loc', 'code_loc', 'documentation_loc',
+                          'string_loc', 'empty_loc']:
+                file_sum = sum(result[0][metric]
+                               for result in results if result[0])
+                assert overall_results[metric] == file_sum, (
+                    f"Aggregate {metric} should equal sum of individual "
+                    f"values")
 
 
 def main():
