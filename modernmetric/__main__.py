@@ -4,8 +4,8 @@ import os
 import textwrap
 import multiprocessing as mp
 from typing import Union
-# from pathlib import Path
-# from cachehash.main import Cache
+from pathlib import Path
+from cachehash.main import Cache
 
 from modernmetric.cls.importer.pick import importer_pick
 from modernmetric.cls.modules import get_additional_parser_args
@@ -155,7 +155,6 @@ def ArgParser(custom_args=None):
 
 # custom_args is an optional list of strings args,
 # e.g. ["--file=path/to/filelist.json"]
-
 
 
 def process_file(f, args, importer):
