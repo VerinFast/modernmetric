@@ -6,4 +6,4 @@ pygments-tsx>=1.0.1
 pygount
 pytest
 pytest-cov
-cachehash~=1.0.2
+cachehash~=1.0.3
