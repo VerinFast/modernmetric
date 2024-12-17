@@ -1,26 +1,26 @@
 [
     {
         "name": "test.c",
-        "path": "../testfiles/test.c"
+        "path": "testfiles/test.c"
     },
     {
         "name": "test.go",
-        "path": "../testfiles/test.go"
+        "path": "testfiles/test.go"
     },
     {
         "name": "test.js",
-        "path": "../testfiles/test.js"
+        "path": "testfiles/test.js"
     },
     {
         "name": "test.php",
-        "path": "../testfiles/test.php"
+        "path": "testfiles/test.php"
     },
     {
         "name": "test.py",
-        "path": "../testfiles/test.py"
+        "path": "testfiles/test.py"
     },
     {
         "name": "test.ts",
-        "path": "../testfiles/test.ts"
+        "path": "testfiles/test.ts"
     }
 ]

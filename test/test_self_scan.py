@@ -1,10 +1,12 @@
 import os
+import json
 from modernmetric.fp import file_process
 from modernmetric.cls.modules import (
     get_modules_metrics,
     get_modules_calculated
 )
 from pathlib import Path
+from modernmetric.__main__ import main as modernmetric
 
 
 class MockArgs:
@@ -122,6 +124,28 @@ def test_scan_self():
                 )
                 assert overall_results[metric] == file_sum, \
                     f"Aggregate {metric} should equal sum of individual values"
+
+
+def test_filelist_scan():
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(curr_dir)
+    stats_input_file = os.path.join(
+        project_root, 'testfiles', 'samplefilelist.json'
+    )
+    stats_output_file = os.path.join(curr_dir, "test.stats.json")
+    custom_args = [
+        f"--file={stats_input_file}",
+        f"--output={stats_output_file}"
+    ]
+    modernmetric(custom_args=custom_args, license_identifier='unit_test')
+    with open(stats_output_file, 'r') as f:
+        stats = json.load(f)
+    files = stats['files']
+    assert files is not None
+    assert files["testfiles/test.c"]["loc"] == 25
+    assert files["testfiles/test.c"]["cyclomatic_complexity"] == 0
+    assert stats["overall"]["loc"] == 178
+    os.remove(stats_output_file)
 
 
 def main():

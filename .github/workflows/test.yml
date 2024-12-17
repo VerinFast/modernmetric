@@ -39,11 +39,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Pytest
-        run: pytest test/test_self_scan.py -v
-
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Run Pytest with coverage
+        run: pytest --cov --cov-report=xml
+  
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: VerinFast/modernmetric
+  

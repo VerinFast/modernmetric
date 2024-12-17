@@ -3,6 +3,7 @@ import json
 import os
 import textwrap
 import multiprocessing as mp
+from typing import Union
 from pathlib import Path
 from cachehash.main import Cache
 
@@ -87,16 +88,16 @@ def ArgParser(custom_args=None):
         help="Ignore unparseable files")
 
     parser.add_argument(
-        '--file', 
-        type=str, 
+        '--file',
+        type=str,
         help='Path to the JSON file list of file paths'
     )
-    
+
     parser.add_argument(
-        'files', 
-        metavar='file', 
-        type=str, 
-        nargs='*', 
+        'files',
+        metavar='file',
+        type=str,
+        nargs='*',
         help='List of file paths'
     )
 
@@ -165,7 +166,8 @@ def process_file(f, args, importer):
     return file_process(f, args, importer, cache)
 
 
-def main(custom_args=None, license_identifier: str | int = None):
+def main(custom_args=None, license_identifier: Union[int, str] = None):
+
     if license_identifier:
         report(
             identifier=license_identifier,
