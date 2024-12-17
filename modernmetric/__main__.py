@@ -157,8 +157,11 @@ def ArgParser(custom_args=None):
 
 
 def process_file(f, args, importer):
-    cache = None if args.no_cache else Cache(Path(args.cache_db),
-                                             "modernmetric")
+    db_path = Path(Path.home(), args.cache_dir, args.cache_db)
+    if not db_path.parent.exists():
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+
+    cache = None if args.no_cache else Cache(db_path, "modernmetric")
     return file_process(f, args, importer, cache)
 
 
