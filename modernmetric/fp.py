@@ -73,13 +73,21 @@ def file_process(
                 store.update(x.get_internal_store())
 
         result = (res, _file, _lexer.name, tokens, store)
+        resDict = {
+            'res': res,
+            'file': _file,
+            'lexer_name': _lexer.name,
+            'tokens': tokens,
+            'store': store
+        }
 
         # Store in cache if available
         if cache is not None and not getattr(_args, 'no_cache', False):
-            cache.store(_file, result)
+            cache.set(_file, resDict)
 
         return result
 
-    except Exception:
+    except Exception as e:
+        print(f"Error processing file {_file}: {e}", file=sys.stderr)
         tokens = []
         return (res, _file, _lexer.name, tokens, store)
