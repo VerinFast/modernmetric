@@ -2,7 +2,7 @@ import os
 import json
 from modernmetric.__main__ import main as modernmetric_main
 from pygments import lex
-from pygments_tsx.tsx import TypeScriptXLexer
+from pygments_tsx.tsx import ToolScriptLexer
 
 
 def test_rsx_support(tmp_path):
@@ -37,7 +37,7 @@ def test_rsx_lexer():
         code = f.read()
 
     # Create lexer and get tokens
-    lexer = TypeScriptXLexer()
+    lexer = ToolScriptLexer()
     tokens = list(lex(code, lexer))
 
     # Test for RSX-specific components
@@ -69,3 +69,6 @@ def test_rsx_lexer():
     # Verify basic syntax elements were found
     assert all(code_elements.values()), \
         f"Missing required code elements. Status: {code_elements}"
+
+    assert lexer.name == 'ToolScript', \
+        f"Incorrect lexer name. Expected 'ToolScript', got '{lexer.name}'"
