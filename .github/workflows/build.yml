@@ -23,16 +23,16 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install build setuptools
+        python3 -m pip install build hatchling
         pip install -r requirements.txt
     - name: Check formatting with Black
       run: |
         pip install black
         black --check .
     - name: Build
-      run: python3 setup.py build
+      run: python -m build
     - name: Install
-      run: python3 setup.py install
+      run: pip install .
   build-and-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     needs: build
@@ -53,7 +53,7 @@ jobs:
         run: >-
           python3 -m
           pip install
-          build setuptools
+          build hatchling
           --user
       - name: Make VERSION
         run: python make_version.py
