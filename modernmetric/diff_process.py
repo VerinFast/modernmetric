@@ -3,10 +3,11 @@ from pygments import lexers
 from modernmetric.cls.modules import get_modules_calculated, get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
 
+
 def process_diff_content(_content, _file, _args, _importer):
     res = {}
     store = {}
-    
+
     try:
         _lexer = lexers.get_lexer_for_filename(_file)
     except Exception as e:
@@ -15,12 +16,11 @@ def process_diff_content(_content, _file, _args, _importer):
             return (res, _file, "unknown", [], store)
         else:
             raise e
-            
+
     try:
-        _localImporter = {k: FilteredImporter(
-            v, _file) for k, v in _importer.items()}
+        _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_content))
-        
+
         if _args.dump:
             for x in tokens:
                 print("{}: {} -> {}".format(_file, x[0], str(x[1])))
@@ -36,5 +36,5 @@ def process_diff_content(_content, _file, _args, _importer):
                 store.update(x.get_internal_store())
     except Exception:
         tokens = []
-        
-    return (res, _file, _lexer.name, tokens, store) 
+
+    return (res, _file, _lexer.name, tokens, store)

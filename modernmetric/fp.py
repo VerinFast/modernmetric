@@ -12,24 +12,19 @@ from modernmetric.cls.importer.filtered import FilteredImporter
 patch_pygments()
 
 
-def file_process(
-    _file,
-    _args,
-    _importer,
-    cache: Optional[Cache] = None
-):
+def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     """Process a file, using cachehash if available"""
     # Try to get cached result first
-    if cache is not None and not getattr(_args, 'no_cache', False):
+    if cache is not None and not getattr(_args, "no_cache", False):
         try:
             cached_result = cache.get(_file)
             if cached_result is not None:
                 return (
-                    cached_result['res'],
-                    cached_result['file'],
-                    cached_result['lexer_name'],
-                    cached_result['tokens'],
-                    cached_result['store']
+                    cached_result["res"],
+                    cached_result["file"],
+                    cached_result["lexer_name"],
+                    cached_result["tokens"],
+                    cached_result["store"],
                 )
         except Exception as e:
             print(f"Cache error: {e}", file=sys.stderr)
@@ -52,8 +47,7 @@ def file_process(
             _enc = chardet.detect(_cnt)
             _cnt = _cnt.decode(_enc["encoding"]).encode("utf-8")
 
-        _localImporter = {k: FilteredImporter(
-            v, _file) for k, v in _importer.items()}
+        _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
 
         if _args.dump:
@@ -74,15 +68,15 @@ def file_process(
 
         result = (res, _file, _lexer.name, tokens, store)
         resDict = {
-            'res': res,
-            'file': _file,
-            'lexer_name': _lexer.name,
-            'tokens': tokens,
-            'store': store
+            "res": res,
+            "file": _file,
+            "lexer_name": _lexer.name,
+            "tokens": tokens,
+            "store": store,
         }
 
         # Store in cache if available
-        if cache is not None and not getattr(_args, 'no_cache', False):
+        if cache is not None and not getattr(_args, "no_cache", False):
             cache.set(_file, resDict)
 
         return result

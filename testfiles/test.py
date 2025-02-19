@@ -16,5 +16,6 @@ def test(a, b):
         b += 1
     return a, b
 
+
 fib(10)
 fib("10")

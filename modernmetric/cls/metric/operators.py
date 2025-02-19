@@ -33,7 +33,9 @@ class MetricBaseOperator(MetricBase):
 
     def get_results(self):
         self._metrics[MetricBaseOperator.METRIC_OPERATORS_SUM] = len(self.__operator)
-        self._metrics[MetricBaseOperator.METRIC_OPERATORS_UNIQUE] = len(list(set(self.__operator)))
+        self._metrics[MetricBaseOperator.METRIC_OPERATORS_UNIQUE] = len(
+            list(set(self.__operator))
+        )
         self._internalstore["operator"] = self.__operator
         return self._metrics
 
@@ -43,5 +45,5 @@ class MetricBaseOperator(MetricBase):
             _operator += x["operator"]
         return {
             MetricBaseOperator.METRIC_OPERATORS_SUM: len(_operator),
-            MetricBaseOperator.METRIC_OPERATORS_UNIQUE: len(list(set(_operator)))
+            MetricBaseOperator.METRIC_OPERATORS_UNIQUE: len(list(set(_operator))),
         }

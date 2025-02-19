@@ -8,7 +8,7 @@ class MetricBaseCalcHalstead(MetricBaseCalc):
 
     BUGPRED_METHOD = {
         "old": "(self._effort * (2.0 / 3.0)) / 3000.0",
-        "new": "self._volume / 3000.0"
+        "new": "self._volume / 3000.0",
     }
 
     BUGPRED_DEFAULT = "new"
@@ -79,9 +79,15 @@ class MetricBaseCalcHalstead(MetricBaseCalc):
         return self._bug
 
     def get_results(self, metrics):
-        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_VOLUME] = self._getVolume(metrics)
-        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_DIFFICULTY] = self._getDifficulty(metrics)
-        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_EFFORT] = self._getEffort(metrics)
+        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_VOLUME] = self._getVolume(
+            metrics
+        )
+        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_DIFFICULTY] = (
+            self._getDifficulty(metrics)
+        )
+        metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_EFFORT] = self._getEffort(
+            metrics
+        )
         metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_TIMEREQ] = self._getTime(metrics)
         metrics[MetricBaseCalcHalstead.METRIC_HALSTEAD_BUGS] = self._getBug(metrics)
         return super().get_results(metrics)
