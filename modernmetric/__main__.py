@@ -15,7 +15,6 @@ from modernmetric.cls.modules import get_modules_stats
 from modernmetric.fp import file_process
 from modernmetric.license import report
 
-
 def ArgParser(custom_args=None):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
