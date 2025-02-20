@@ -3,6 +3,7 @@ from pygments import lexers
 from modernmetric.cls.modules import get_modules_calculated, get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
 
+
 def process_diff_content(_content, _file, _args, _importer):
     res = {}
     store = {}
