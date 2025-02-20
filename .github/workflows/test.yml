@@ -6,13 +6,57 @@ on:
       - master
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
+  run-black:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true  # Needed to push changes
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Black
+        run: pip install black
+
+      - name: Detect current branch
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # For PRs, use the source branch of the pull request
+            echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+          else
+            # Fallback for workflow_dispatch or other events
+            echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          fi
+
+      - name: Run Black
+        run: black .
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add .
+            # Include [skip ci] to avoid triggering this same workflow again
+            git commit -m "chore: Black formatting [skip ci]"
+            git push origin "HEAD:${{ env.BRANCH_NAME }}"
+          else
+            echo "No formatting changes to commit."
+          fi
+  
   unit-tests:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
-
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -20,8 +64,8 @@ jobs:
 
       - name: Check formatting with Black
         run: |
-            pip install black
-            black --check .
+          pip install black
+          black --check .
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -49,4 +93,3 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: VerinFast/modernmetric
-  

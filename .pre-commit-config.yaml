@@ -1,3 +1,7 @@
+# To enable pre-commit hooks, run `pip install pre-commit` in
+# the root of the repository and then run `pre-commit install`
+# in the root of the repository to create .git/hooks/pre-commit
+
 repos:
 -   repo: https://github.com/psf/black
     rev: 24.1.1
