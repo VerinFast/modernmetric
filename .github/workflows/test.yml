@@ -44,13 +44,19 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
+      
             git add .
-            # Include [skip ci] to avoid triggering this same workflow again
             git commit -m "chore: Black formatting [skip ci]"
-            git push origin "HEAD:${{ env.BRANCH_NAME }}"
+      
+            # Pull any new commits that appeared while we were running
+            git pull --rebase origin "${{ env.BRANCH_NAME }}"
+            
+            # Now push. If the rebase has no conflicts, it will succeed.
+            git push origin HEAD:${{ env.BRANCH_NAME }}
           else
             echo "No formatting changes to commit."
           fi
+      
   
   unit-tests:
     strategy:
