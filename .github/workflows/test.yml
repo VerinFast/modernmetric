@@ -1,9 +1,6 @@
 name: "Run Tests"
 
 on:
-  push:
-    branches:
-      - master
   pull_request:
     branches:
       - master
@@ -20,6 +17,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check formatting with Black
+        run: |
+            pip install black
+            black --check .
 
       - name: Set up Python
         uses: actions/setup-python@v5
