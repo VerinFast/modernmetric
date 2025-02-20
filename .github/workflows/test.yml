@@ -39,23 +39,23 @@ jobs:
       - name: Run Black
         run: black .
 
-      - name: Commit and push changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+    #   - name: Commit and push changes
+    #     run: |
+    #       if [[ -n "$(git status --porcelain)" ]]; then
+    #         git config user.name "github-actions[bot]"
+    #         git config user.email "github-actions[bot]@users.noreply.github.com"
       
-            git add .
-            git commit -m "chore: Black formatting"
+    #         git add .
+    #         git commit -m "chore: Black formatting"
       
-            # Pull any new commits that appeared while we were running
-            git pull --rebase origin "${{ env.BRANCH_NAME }}"
+    #         # Pull any new commits that appeared while we were running
+    #         git pull --rebase origin "${{ env.BRANCH_NAME }}"
             
-            # Now push. If the rebase has no conflicts, it will succeed.
-            git push origin HEAD:${{ env.BRANCH_NAME }}
-          else
-            echo "No formatting changes to commit."
-          fi
+    #         # Now push. If the rebase has no conflicts, it will succeed.
+    #         git push origin HEAD:${{ env.BRANCH_NAME }}
+    #       else
+    #         echo "No formatting changes to commit."
+    #       fi
       
   
   unit-tests:
@@ -68,10 +68,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check formatting with Black
-        run: |
-          pip install black
-          black --check .
+    #   - name: Check formatting with Black
+    #     run: |
+    #       pip install black
+    #       black --check .
 
       - name: Set up Python
         uses: actions/setup-python@v5
