@@ -27,6 +27,7 @@ def test_rsx_support(tmp_path):
         assert any(f.endswith("Sample.rsx") for f in result["files"])
 
 
+
 def test_rsx_lexer():
     # Get path to the sample RSX file
     current_dir = os.path.dirname(__file__)

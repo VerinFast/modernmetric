@@ -1,39 +1,15 @@
 name: "Run Tests"
 
 on:
-    # Run this workflow for PRs into master or a release branch
-    pull_request:
-      branches:
-        - master
-        - release-*
-    # Run on tagged releases
-    push:
-      tags:
-        - '*'
+    workflow_run:
+      workflows: ["Run Black"]   # matches the name: in test.yml
+      types: [completed]
     workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  run-black:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Install Black
-        run: pip install black
-
-      - name: Run Black
-        run: black --check --diff .
-
   unit-tests:
     strategy:
       matrix:
