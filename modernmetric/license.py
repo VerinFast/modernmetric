@@ -4,20 +4,6 @@ from typing import Union
 requestx = httpx.Client(http2=True, timeout=None)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def report(identifier: Union[int, str], product: str, die: bool = False):
     """
     License reporter reports back usage of some commercial features to help
