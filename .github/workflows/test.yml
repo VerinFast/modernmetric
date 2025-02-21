@@ -2,7 +2,7 @@ name: "Run Tests"
 
 on:
     workflow_run:
-      workflows: ["Run Black"]   # matches the name: in test.yml
+      workflows: ["Run Black"]   # matches the name: in black.yml
       types: [completed]
     workflow_dispatch:
 
