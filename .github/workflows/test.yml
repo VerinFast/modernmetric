@@ -1,10 +1,11 @@
 name: "Run Tests"
 
 on:
-    # Run this workflow for PRs *into* master
+    # Run this workflow for PRs into master or a release branch
     pull_request:
       branches:
         - master
+        - release-*
     # Run on tagged releases
     push:
       tags:
