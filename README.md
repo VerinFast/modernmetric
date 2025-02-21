@@ -1,5 +1,5 @@
 # Modern Metric
-Calculate code metrics in various languages
+Calculate code metrics and complexity in various languages
 
 ## Purpose
 

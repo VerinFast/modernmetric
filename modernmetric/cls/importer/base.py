@@ -1,13 +1,9 @@
-class Importer():
+class Importer:
 
-    class ImporterItem():
+    class ImporterItem:
 
         def __init__(self, _file, _cnt, _sev):
-            self._values = {
-                "filename": _file,
-                "content": _cnt,
-                "severity": _sev
-            }
+            self._values = {"filename": _file, "content": _cnt, "severity": _sev}
 
         def match(self, _filter):
             return all([self._values[k] == v for k, v in _filter.items()])

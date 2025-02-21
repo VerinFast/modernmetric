@@ -3,25 +3,15 @@ from modernmetric.cls.base import MetricBase
 
 class MetricBaseFanout(MetricBase):
     _needles = {
-        "Python": [
-            "Token.Name.Namespace"
-        ],
-        "C": [
-            "Token.Comment.PreprocFile"
-        ],
-        "C++": [
-            "Token.Comment.PreprocFile"
-        ]
+        "Python": ["Token.Name.Namespace"],
+        "C": ["Token.Comment.PreprocFile"],
+        "C++": ["Token.Comment.PreprocFile"],
     }
-    _functions = {
-        "PHP": "_parsePHP",
-        "Go": "_parseGo",
-        "Ruby": "_parseRuby"
-    }
+    _functions = {"PHP": "_parsePHP", "Go": "_parseGo", "Ruby": "_parseRuby"}
     _internal = {
         "Python": {"start": ".", "end": ""},
-        "C": {"start": "\"", "end": "\""},
-        "C++": {"start": "\"", "end": "\""}
+        "C": {"start": '"', "end": '"'},
+        "C++": {"start": '"', "end": '"'},
     }
 
     METRIC_FANOUT_INTERNAL = "fanout_internal"
@@ -33,18 +23,20 @@ class MetricBaseFanout(MetricBase):
         self._ext = set()
 
     def __isInternal(self, value, internal_mapping):
-        return all([value.startswith(internal_mapping["start"]),
-                    value.endswith(internal_mapping["end"])])
+        return all(
+            [
+                value.startswith(internal_mapping["start"]),
+                value.endswith(internal_mapping["end"]),
+            ]
+        )
 
     def _parsePHP(self, iterator):
         res = []
         _start_token = ["include", "require", "include_once", "require_once"]
         _cont_token = ["Token.Literal.String.Single", "Token.Literal.String.Double"]
         for i, val in iterator:
-            if str(val[0]) in ["Token.Keyword"] and \
-               val[1] in _start_token:
-                while iterator and \
-                      str(val[0]) not in _cont_token:
+            if str(val[0]) in ["Token.Keyword"] and val[1] in _start_token:
+                while iterator and str(val[0]) not in _cont_token:
                     i, val = next(iterator)
                 if iterator:
                     res.append(val[1].strip("'").strip('"'))
@@ -72,7 +64,7 @@ class MetricBaseFanout(MetricBase):
                     i, val = next(iterator)
                     if str(val[0]) in ["Token.Literal.String"]:
                         res.append(val[1].strip("'").strip('"'))
-                    if str(val[0]) in ["Token.Punctuation"] and val[1] in [')']:
+                    if str(val[0]) in ["Token.Punctuation"] and val[1] in [")"]:
                         break
         return res
 
@@ -88,8 +80,9 @@ class MetricBaseFanout(MetricBase):
             for x in [x for x in tokens if str(x[0]) in _n]:
                 _imports.append(x[1])
         elif language in MetricBaseFanout._functions:
-            _imports = getattr(self,
-                               MetricBaseFanout._functions[language])(enumerate(tokens))
+            _imports = getattr(self, MetricBaseFanout._functions[language])(
+                enumerate(tokens)
+            )
         # else:
         #     # Language isn't supported at the moment
         #     for x in tokens:
@@ -99,8 +92,12 @@ class MetricBaseFanout(MetricBase):
                 self._int.add(str(x))
             else:
                 self._ext.add(str(x))
-        self._metrics.update({MetricBaseFanout.METRIC_FANOUT_INTERNAL: len(list(self._int)),
-                              MetricBaseFanout.METRIC_FANOUT_EXTERNAL: len(list(self._ext))})
+        self._metrics.update(
+            {
+                MetricBaseFanout.METRIC_FANOUT_INTERNAL: len(list(self._int)),
+                MetricBaseFanout.METRIC_FANOUT_EXTERNAL: len(list(self._ext)),
+            }
+        )
         self._internalstore["int"] = list(self._int)
         self._internalstore["ext"] = list(self._ext)
 
@@ -112,5 +109,5 @@ class MetricBaseFanout(MetricBase):
             _ext += x["ext"]
         return {
             MetricBaseFanout.METRIC_FANOUT_INTERNAL: len(_int),
-            MetricBaseFanout.METRIC_FANOUT_EXTERNAL: len(_ext)
+            MetricBaseFanout.METRIC_FANOUT_EXTERNAL: len(_ext),
         }

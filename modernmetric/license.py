@@ -21,21 +21,18 @@ def report(identifier: Union[int, str], product: str, die: bool = False):
 
     """
     headers = {
-        'content-type': 'application/json',
-        'Accept-Charset': 'UTF-8',
+        "content-type": "application/json",
+        "Accept-Charset": "UTF-8",
     }
 
-    data = {
-        "uuid": identifier,
-        "product": product
-    }
+    data = {"uuid": identifier, "product": product}
 
     response = None
     try:
         response = requestx.post(
             f"https://logger.verinfast.com/logger?license=true&product={str(product)}",  # noqa: E501
             json=data,
-            headers=headers
+            headers=headers,
         )
     except Exception as e:  # noqa: E722
         if die:

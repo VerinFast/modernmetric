@@ -1,4 +1,4 @@
-class MetricBase():
+class MetricBase:
     def __init__(self, args, **kwargs):
         self._metrics = {"lang": []}
         self._internalstore = {}
