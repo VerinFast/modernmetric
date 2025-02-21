@@ -1,4 +1,4 @@
-class MetricBaseStats():
+class MetricBaseStats:
 
     def __init__(self, args, **kwargs):
         self._metrics = {}
@@ -8,4 +8,3 @@ class MetricBaseStats():
         This alters the originally passed metrics by calculated ones
         """
         return metrics
-    

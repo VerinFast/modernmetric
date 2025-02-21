@@ -3,14 +3,7 @@ from modernmetric.cls.base import MetricBase
 
 class MetricBaseCyclomaticComplexity(MetricBase):
 
-    __exitPoints = [
-        "return",
-        "exit",
-        "assert",
-        "break",
-        "continue",
-        "yield"
-    ]
+    __exitPoints = ["return", "exit", "assert", "break", "continue", "yield"]
 
     __conditions = [
         "if",
@@ -23,7 +16,7 @@ class MetricBaseCyclomaticComplexity(MetricBase):
         "and",
         "or",
         "&&",
-        "||"
+        "||",
     ]
 
     METRIC_CYCLOMATIC_COMPLEXITY = "cyclomatic_complexity"
@@ -42,8 +35,14 @@ class MetricBaseCyclomaticComplexity(MetricBase):
                 self._internalstore["conditions"] += 1
 
     def get_results(self):
-        self._metrics[MetricBaseCyclomaticComplexity.METRIC_CYCLOMATIC_COMPLEXITY] = max(
-            self._internalstore["conditions"] - self._internalstore["exitpoints"] + 2, 0)
+        self._metrics[MetricBaseCyclomaticComplexity.METRIC_CYCLOMATIC_COMPLEXITY] = (
+            max(
+                self._internalstore["conditions"]
+                - self._internalstore["exitpoints"]
+                + 2,
+                0,
+            )
+        )
         return self._metrics
 
     def get_results_global(self, value_stores):
@@ -54,5 +53,6 @@ class MetricBaseCyclomaticComplexity(MetricBase):
             __exitPoints += x["exitpoints"]
         return {
             MetricBaseCyclomaticComplexity.METRIC_CYCLOMATIC_COMPLEXITY: max(
-                __conditions - __exitPoints + 2, 0)
+                __conditions - __exitPoints + 2, 0
+            )
         }

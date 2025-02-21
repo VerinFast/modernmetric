@@ -27,24 +27,26 @@ def get_modules_calculated(args, **kwargs):
         MetricBaseCalcHalstead(args, **kwargs),
         MetricBaseCalcMaintenanceIndex(args, **kwargs),
         MetricBaseCalcTIOBE(args, **kwargs),
-        MetricBaseCalcPylint(args, **kwargs)
+        MetricBaseCalcPylint(args, **kwargs),
     ]
 
 
 def get_modules_stats(args, **kwargs):
-    return [
-        MetricBaseStatsAverage(args, **kwargs)
-    ]
+    return [MetricBaseStatsAverage(args, **kwargs)]
 
 
 def get_additional_parser_args(parser):
-    parser.add_argument("--bugpredict",
-                        choices=MetricBaseCalcHalstead.BUGPRED_METHOD.keys(),
-                        default=MetricBaseCalcHalstead.BUGPRED_DEFAULT,
-                        help="Method how to calculate the bug prediction",
-                        dest="halstead_bug_predict_method")
-    parser.add_argument("--maintindex",
-                        choices=MetricBaseCalcMaintenanceIndex.MI_METHOD.keys(),
-                        default=MetricBaseCalcMaintenanceIndex.MI_DEFAULT,
-                        help="Method how to calculate the maintainability index",
-                        dest="maintenance_index_calc_method")
+    parser.add_argument(
+        "--bugpredict",
+        choices=MetricBaseCalcHalstead.BUGPRED_METHOD.keys(),
+        default=MetricBaseCalcHalstead.BUGPRED_DEFAULT,
+        help="Method how to calculate the bug prediction",
+        dest="halstead_bug_predict_method",
+    )
+    parser.add_argument(
+        "--maintindex",
+        choices=MetricBaseCalcMaintenanceIndex.MI_METHOD.keys(),
+        default=MetricBaseCalcMaintenanceIndex.MI_DEFAULT,
+        help="Method how to calculate the maintainability index",
+        dest="maintenance_index_calc_method",
+    )

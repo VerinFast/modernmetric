@@ -19,7 +19,7 @@ class MetricBaseCalcMaintenanceIndex(MetricBaseCalc):
                 171.0 \
                 - (5.2 * math.log(metrics["halstead_volume"])) \
                 - (0.23 * metrics["cyclomatic_complexity"]), \
-                - (16.2 * math.log(metrics["loc"]) * 100.0 / 171.0))'
+                - (16.2 * math.log(metrics["loc"]) * 100.0 / 171.0))',
     }
 
     MI_DEFAULT = "classic"
@@ -36,12 +36,15 @@ class MetricBaseCalcMaintenanceIndex(MetricBaseCalc):
     def get_results(self, metrics):
         try:
             metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX] = eval(
-                MetricBaseCalcMaintenanceIndex.MI_METHOD[self.__miMethod])
+                MetricBaseCalcMaintenanceIndex.MI_METHOD[self.__miMethod]
+            )
         except Exception as e:
-            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX]=0
+            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX] = 0
         # Sanity
         metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX] = max(
-            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX], 0)
+            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX], 0
+        )
         metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX] = min(
-            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX], 100)
+            metrics[MetricBaseCalcMaintenanceIndex.METRIC_MAINTAINABILITY_INDEX], 100
+        )
         return super().get_results(metrics)

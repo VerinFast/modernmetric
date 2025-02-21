@@ -1,4 +1,4 @@
-class FilteredImporter():
+class FilteredImporter:
     def __init__(self, importer, filename):
         self.__importer = importer
         self.__filefilter = filename
@@ -7,4 +7,6 @@ class FilteredImporter():
         return self.__importer.getItems({"filename": self.__filefilter})
 
     def getSumItems(self, _filter={}):
-        return self.__importer.getSumItems(_filter={"filename": self.__filefilter, **_filter})
+        return self.__importer.getSumItems(
+            _filter={"filename": self.__filefilter, **_filter}
+        )

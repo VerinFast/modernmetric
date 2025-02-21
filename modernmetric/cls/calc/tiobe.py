@@ -5,14 +5,15 @@ from modernmetric.cls.metric.cyclomatic import MetricBaseCyclomaticComplexity
 from modernmetric.cls.metric.fanout import MetricBaseFanout
 from modernmetric.cls.metric.loc import MetricBaseLOC
 
+
 def fail_safe(fn):
     def wrapper(*args, **kwargs):
         try:
             return fn(*args, **kwargs)
         except Exception as e:
             return 0
-    return wrapper
 
+    return wrapper
 
 
 class MetricBaseCalcTIOBE(MetricBaseCalc):
@@ -30,7 +31,7 @@ class MetricBaseCalcTIOBE(MetricBaseCalc):
     def __init__(self, args, **kwargs):
         super().__init__(args, **kwargs)
         self.__addArgs = kwargs
-    
+
     @fail_safe
     def __getScaledValue(self, metrics, value):
         return 100.0 / ((value) / (metrics[MetricBaseLOC.METRIC_LOC] / 1000.0) + 1.0)
@@ -70,14 +71,15 @@ class MetricBaseCalcTIOBE(MetricBaseCalc):
 
     @fail_safe
     def __getTiobeDuplication(self, metrics):
-        return min(-30.0 * math.log10(self.__getFromImporter("duplication") or 0.00001) +
-                   70.0, 100.0)
-    
+        return min(
+            -30.0 * math.log10(self.__getFromImporter("duplication") or 0.00001) + 70.0,
+            100.0,
+        )
+
     @fail_safe
     def __getTiobeCompiler(self, metrics):
         _violations = self.__getScaledValue(metrics, self.__getFromImporter("compiler"))
-        return max(100.0 - 50.0 *
-                   math.log((101 - _violations) or 0.00001), 0.0)
+        return max(100.0 - 50.0 * math.log((101 - _violations) or 0.00001), 0.0)
 
     @fail_safe
     def __getTiobeFunctional(self, metrics):
@@ -86,23 +88,41 @@ class MetricBaseCalcTIOBE(MetricBaseCalc):
 
     @fail_safe
     def __getTiobe(self, metrics):
-        return (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COVERAGE] * 0.2) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FUNCTIONAL] * 0.2) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPLEXITY] * 0.15) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPILER] * 0.15) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_STANDARD] * 0.1) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_DUPLICATION] * 0.1) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FANOUT] * 0.05) + \
-               (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_SECURITY] * 0.05)
+        return (
+            (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COVERAGE] * 0.2)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FUNCTIONAL] * 0.2)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPLEXITY] * 0.15)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPILER] * 0.15)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_STANDARD] * 0.1)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_DUPLICATION] * 0.1)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FANOUT] * 0.05)
+            + (metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_SECURITY] * 0.05)
+        )
 
     def get_results(self, metrics):
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPLEXITY] = self.__getTiobeComplexity(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FANOUT] = self.__getTiobeFanout(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPILER] = self.__getTiobeCompiler(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COVERAGE] = self.__getTiobeCoverage(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_DUPLICATION] = self.__getTiobeDuplication(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FUNCTIONAL] = self.__getTiobeFunctional(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_SECURITY] = self.__getTiobeSecurity(metrics)
-        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_STANDARD] = self.__getTiobeStandard(metrics)
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPLEXITY] = (
+            self.__getTiobeComplexity(metrics)
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FANOUT] = self.__getTiobeFanout(
+            metrics
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COMPILER] = self.__getTiobeCompiler(
+            metrics
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_COVERAGE] = self.__getTiobeCoverage(
+            metrics
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_DUPLICATION] = (
+            self.__getTiobeDuplication(metrics)
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_FUNCTIONAL] = (
+            self.__getTiobeFunctional(metrics)
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_SECURITY] = self.__getTiobeSecurity(
+            metrics
+        )
+        metrics[MetricBaseCalcTIOBE.METRIC_TIOBE_STANDARD] = self.__getTiobeStandard(
+            metrics
+        )
         metrics[MetricBaseCalcTIOBE.METRIC_TIOBE] = self.__getTiobe(metrics)
         return super().get_results(metrics)
