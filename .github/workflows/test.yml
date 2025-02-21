@@ -70,6 +70,8 @@ jobs:
             token: ${{ secrets.CODECOV_TOKEN }}
             slug: VerinFast/modernmetric
     build-and-publish:
+        permissions:
+          id-token: write
         name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
         needs: unit-tests
         runs-on: ubuntu-latest
