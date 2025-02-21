@@ -1,14 +1,9 @@
 name: Build
 
 on:
-    # Run this workflow for PRs *into* master
-    pull_request:
-      branches:
-        - master
-    # Run on tagged releases
-    push:
-      tags:
-        - '*'
+    workflow_run:
+      workflows: ["Run Tests"]   # matches the name: in test.yml
+      types: [completed]
     workflow_dispatch:
 
 jobs:
