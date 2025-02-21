@@ -13,77 +13,24 @@ on:
     workflow_dispatch:
 
 permissions:
-  contents: write
+    contents: write
+    checks: write
+    issues: write
+    pull-requests: write
 
 jobs:
-    linter_name:
-        name: run-black
+    lint:
         runs-on: ubuntu-latest
         steps:
-          - uses: actions/checkout@v4
-          - name: Check files using the black formatter
-            uses: rickstaa/action-black@v1
-            id: action_black
-            with:
-              black_args: "."
-          - name: Create Pull Request
-            if: steps.action_black.outputs.is_formatted == 'true'
-            uses: peter-evans/create-pull-request@v6
-            with:
-              token: ${{ secrets.GITHUB_TOKEN }}
-              title: "Format Python code with psf/black push"
-              commit-message: ":art: Format Python code with psf/black"
-              body: |
-                There appear to be some python formatting errors in ${{ github.sha }}. This pull request
-                uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
-              base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
-              branch: actions/black
-    # run-black:
-    #     runs-on: ubuntu-latest
+        - uses: actions/checkout@v4
+        - id: black
+          uses: psf/black@stable
 
-    #     steps:
-    #     - uses: actions/checkout@v4
-    #       with:
-    #         persist-credentials: true  # Needed to push changes
-
-    #     - name: Set up Python
-    #       uses: actions/setup-python@v5
-    #       with:
-    #         python-version: "3.x"
-
-    #     - name: Install Black
-    #       run: pip install black
-
-    #     - name: Detect current branch
-    #       run: |
-    #         if [ "${{ github.event_name }}" = "pull_request" ]; then
-    #             # For PRs, use the source branch of the pull request
-    #             echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
-    #         else
-    #             # Fallback for workflow_dispatch or other events
-    #             echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-    #         fi
-
-    #     - name: Run Black
-    #       run: black .
-
-    #     - name: Commit and push changes
-    #       run: |
-    #         if [[ -n "$(git status --porcelain)" ]]; then
-    #             git config user.name "github-actions[bot]"
-    #             git config user.email "github-actions[bot]@users.noreply.github.com"
-        
-    #             git add .
-    #             git commit -m "chore: Black formatting"
-        
-    #             # Pull any new commits that appeared while we were running
-    #             git pull --rebase origin "${{ env.BRANCH_NAME }}"
-                
-    #             # Now push. If the rebase has no conflicts, it will succeed.
-    #             git push origin HEAD:${{ env.BRANCH_NAME }}
-    #         else
-    #             echo "No formatting changes to commit."
-    #         fi
+        - name: Annotate diff changes using reviewdog
+          if: steps.black.outputs.is_formatted == 'true'
+          uses: reviewdog/action-suggester@v1
+          with:
+            tool_name: blackfmt
     unit-tests:
         strategy:
           matrix:
@@ -146,7 +93,7 @@ jobs:
             --user
         - name: Make VERSION
           run: python make_version.py
-        - name: Build a binary wheel and a source tarball
+        - name: Build a binary wheel and a source tarball for Test PyPI
           run: >-
             python3 -m
             build
@@ -157,10 +104,15 @@ jobs:
         - name: Publish distribution 📦 to Test PyPI
           uses: pypa/gh-action-pypi-publish@release/v1
           with:
-            password: ${{ secrets.TEST_PYPI_API_TOKEN }}
             repository-url: https://test.pypi.org/legacy/
+        - name: Build a binary wheel and a source tarball for PyPI
+          run: >-
+            rm -rf dist && python3 -m
+            build
+            --sdist
+            --wheel
+            --outdir dist/
+            .
         - name: Publish distribution 📦 to PyPI
           if: startsWith(github.ref, 'refs/tags')
           uses: pypa/gh-action-pypi-publish@release/v1
-          with:
-            password: ${{ secrets.PYPI_API_TOKEN }}
