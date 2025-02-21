@@ -4,7 +4,6 @@ from modernmetric.cls.base_stats import MetricBaseStats
 
 
 class MetricBaseStatsAverage(MetricBaseStats):
-
     def __init__(self, args, **kwargs):
         super().__init__(args, **kwargs)
 

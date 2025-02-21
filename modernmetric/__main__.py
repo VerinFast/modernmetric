@@ -164,7 +164,6 @@ def process_file(f, args, importer):
 
 
 def main(custom_args=None, license_identifier: Union[int, str] = None):
-
     if license_identifier:
         report(identifier=license_identifier, product="modernmetric")
     if custom_args:

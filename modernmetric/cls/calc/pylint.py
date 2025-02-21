@@ -4,7 +4,6 @@ from modernmetric.cls.metric.operands import MetricBaseOperands
 
 
 class MetricBaseCalcPylint(MetricBaseCalc):
-
     METRIC_PYLINT = "pylint"
 
     def __init__(self, args, **kwargs):

@@ -4,7 +4,6 @@ import math  # noqa: F401
 
 
 class MetricBaseCalcMaintenanceIndex(MetricBaseCalc):
-
     MI_METHOD = {
         "sei": '171.0 \
              - (5.2 * math.log2(metrics["halstead_volume"])) \

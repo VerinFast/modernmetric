@@ -1,5 +1,4 @@
 class MetricBaseStats:
-
     def __init__(self, args, **kwargs):
         self._metrics = {}
 

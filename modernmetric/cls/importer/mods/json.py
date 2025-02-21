@@ -5,7 +5,6 @@ from modernmetric.cls.importer.base import Importer
 
 
 class ImporterJSON(Importer):
-
     def __init__(self, args, filearg):
         super().__init__(args, filearg)
         self.__readInput()

@@ -1,5 +1,4 @@
 class MetricBaseCalc:
-
     def __init__(self, args, **kwargs):
         self._metrics = {}
         self._internalstore = {}

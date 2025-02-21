@@ -1,7 +1,5 @@
 class Importer:
-
     class ImporterItem:
-
         def __init__(self, _file, _cnt, _sev):
             self._values = {"filename": _file, "content": _cnt, "severity": _sev}
 
