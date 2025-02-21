@@ -36,6 +36,9 @@ jobs:
           uses: reviewdog/action-suggester@v1
           with:
             tool_name: blackfmt
+        - name: Fail on Linting Issue
+          if: steps.black.outcome == 'failure'
+          run: exit 1
     unit-tests:
         strategy:
           matrix:
