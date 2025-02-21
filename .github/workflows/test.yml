@@ -1,10 +1,15 @@
 name: "Run Tests"
 
 on:
-    workflow_run:
-      workflows: ["Run Black"]   # matches the name: in black.yml
-      types:
-      - completed
+    # Run this workflow for PRs into master or a release branch
+    pull_request:
+      branches:
+        - master
+        - release-*
+    # Run on tagged releases
+    push:
+      tags:
+        - '*'
     workflow_dispatch:
 
 permissions:
