@@ -3,7 +3,8 @@ name: "Run Tests"
 on:
     workflow_run:
       workflows: ["Run Black"]   # matches the name: in black.yml
-      types: [completed]
+      types:
+      - completed
     workflow_dispatch:
 
 permissions:

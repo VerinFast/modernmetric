@@ -1,4 +1,4 @@
-name: "Run Black"
+name: Run Black
 
 on:
     # Run this workflow for PRs into master or a release branch
