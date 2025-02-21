@@ -26,16 +26,6 @@ jobs:
       - name: Install Black
         run: pip install black
 
-      - name: Detect current branch
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # For PRs, use the source branch of the pull request
-            echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
-          else
-            # Fallback for workflow_dispatch or other events
-            echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          fi
-
       - name: Run Black
         run: black --check --diff .
 
