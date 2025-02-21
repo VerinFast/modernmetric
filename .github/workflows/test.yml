@@ -16,92 +16,113 @@ permissions:
   contents: write
 
 jobs:
-  run-black:
+    linter_name:
+        name: run-black
         runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+          - name: Check files using the black formatter
+            uses: rickstaa/action-black@v1
+            id: action_black
+            with:
+              black_args: "."
+          - name: Create Pull Request
+            if: steps.action_black.outputs.is_formatted == 'true'
+            uses: peter-evans/create-pull-request@v6
+            with:
+              token: ${{ secrets.GITHUB_TOKEN }}
+              title: "Format Python code with psf/black push"
+              commit-message: ":art: Format Python code with psf/black"
+              body: |
+                There appear to be some python formatting errors in ${{ github.sha }}. This pull request
+                uses the [psf/black](https://github.com/psf/black) formatter to fix these issues.
+              base: ${{ github.head_ref }} # Creates pull request onto pull request or commit branch
+              branch: actions/black
+    # run-black:
+    #     runs-on: ubuntu-latest
+
+    #     steps:
+    #     - uses: actions/checkout@v4
+    #       with:
+    #         persist-credentials: true  # Needed to push changes
+
+    #     - name: Set up Python
+    #       uses: actions/setup-python@v5
+    #       with:
+    #         python-version: "3.x"
+
+    #     - name: Install Black
+    #       run: pip install black
+
+    #     - name: Detect current branch
+    #       run: |
+    #         if [ "${{ github.event_name }}" = "pull_request" ]; then
+    #             # For PRs, use the source branch of the pull request
+    #             echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
+    #         else
+    #             # Fallback for workflow_dispatch or other events
+    #             echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+    #         fi
+
+    #     - name: Run Black
+    #       run: black .
+
+    #     - name: Commit and push changes
+    #       run: |
+    #         if [[ -n "$(git status --porcelain)" ]]; then
+    #             git config user.name "github-actions[bot]"
+    #             git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+    #             git add .
+    #             git commit -m "chore: Black formatting"
+        
+    #             # Pull any new commits that appeared while we were running
+    #             git pull --rebase origin "${{ env.BRANCH_NAME }}"
+                
+    #             # Now push. If the rebase has no conflicts, it will succeed.
+    #             git push origin HEAD:${{ env.BRANCH_NAME }}
+    #         else
+    #             echo "No formatting changes to commit."
+    #         fi
+    unit-tests:
+        strategy:
+          matrix:
+            os: [ubuntu-latest]
+            python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.x"]
+        runs-on: ${{ matrix.os }}
 
         steps:
         - uses: actions/checkout@v4
-          with:
-            persist-credentials: true  # Needed to push changes
 
         - name: Set up Python
           uses: actions/setup-python@v5
           with:
-            python-version: "3.x"
+            python-version: ${{ matrix.python-version }}
 
-        - name: Install Black
-          run: pip install black
+        - name: Cache pip
+          uses: actions/cache@v3
+          with:
+            path: ~/.cache/pip
+            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            restore-keys: |
+                ${{ runner.os }}-pip-
 
-        - name: Detect current branch
+        # Upgrade pip and install with dependencies
+        - name: Install app and dependencies
           run: |
-            if [ "${{ github.event_name }}" = "pull_request" ]; then
-                # For PRs, use the source branch of the pull request
-                echo "BRANCH_NAME=${{ github.event.pull_request.head.ref }}" >> $GITHUB_ENV
-            else
-                # Fallback for workflow_dispatch or other events
-                echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-            fi
+            python3 -m pip install --upgrade pip
+            python3 -m pip install build hatchling
+            python3 -m pip install -e .
 
-        - name: Run Black
-          run: black .
-
-        - name: Commit and push changes
-          run: |
-            if [[ -n "$(git status --porcelain)" ]]; then
-                git config user.name "github-actions[bot]"
-                git config user.email "github-actions[bot]@users.noreply.github.com"
-        
-                git add .
-                git commit -m "chore: Black formatting"
-        
-                # Pull any new commits that appeared while we were running
-                git pull --rebase origin "${{ env.BRANCH_NAME }}"
-                
-                # Now push. If the rebase has no conflicts, it will succeed.
-                git push origin HEAD:${{ env.BRANCH_NAME }}
-            else
-                echo "No formatting changes to commit."
-            fi
-  unit-tests:
-    needs: run-black
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.x"]
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      # Upgrade pip and install with dependencies
-      - name: Install app and dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install build hatchling
-          python3 -m pip install -e .
-
-      - name: Run Pytest with coverage
-        run: pytest --cov --cov-report=xml
-  
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          slug: VerinFast/modernmetric
-  build-and-publish:
+        - name: Run Pytest with coverage
+          run: pytest --cov --cov-report=xml
+    
+        - name: Upload coverage reports to Codecov
+          uses: codecov/codecov-action@v5
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            slug: VerinFast/modernmetric
+    build-and-publish:
         name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
         needs: unit-tests
         runs-on: ubuntu-latest
