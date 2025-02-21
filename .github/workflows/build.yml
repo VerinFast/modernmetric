@@ -2,9 +2,9 @@ name: Build
 
 on:
     workflow_run:
-      workflows: ["Run Tests"]   # matches the name: in test.yml
-      types: [completed]
-    workflow_dispatch:
+      workflows: [Run Tests]
+      types:
+        - completed
 
 jobs:
     build-and-publish:
