@@ -26,9 +26,11 @@ jobs:
         - id: black
           uses: psf/black@stable
           continue-on-error: true
+        - id: black2
+          if: steps.black.outcome == 'failure'
+          uses: psf/black@stable
           with:
             options: ''
-
         - name: Annotate diff changes using reviewdog
           if: steps.black.outcome == 'failure'
           uses: reviewdog/action-suggester@v1
