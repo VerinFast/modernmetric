@@ -14,9 +14,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: true  # Needed to push changes
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -53,7 +52,7 @@ jobs:
             ${{ runner.os }}-pip-
 
       # Upgrade pip and install with dependencies
-      - name: Install dependencies
+      - name: Install app and dependencies
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install build hatchling
