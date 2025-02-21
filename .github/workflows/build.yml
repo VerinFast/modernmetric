@@ -3,8 +3,11 @@ name: Build
 on:
     workflow_run:
       workflows: [Run Tests]
-      types:
+      types: 
         - completed
+      branches:
+        - master
+        - release-*
 
 jobs:
     build-and-publish:
