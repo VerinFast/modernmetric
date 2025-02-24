@@ -1,9 +1,6 @@
-black>=24.1.1
 chardet>=5.1.0
 httpx[http2]~=0.28.1
 pygments>=2.15.1
 pygments-tsx>=1.0.1
 pygount
-pytest
-pytest-cov
 cachehash~=1.0.3
