@@ -86,7 +86,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
 
         # Store in cache if available
         if cache is not None and not getattr(_args, "no_cache", False):
-            cache.set(_file, json.dumps(resDict))
+            cache.set(_file, resDict)
 
         return result
 
