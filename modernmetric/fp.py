@@ -1,6 +1,5 @@
 import sys
 import chardet
-import json
 from typing import Optional
 from pygments import lexers
 from pygments_tsx.tsx import patch_pygments
