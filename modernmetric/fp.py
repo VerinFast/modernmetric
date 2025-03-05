@@ -18,7 +18,15 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     if cache is not None and not getattr(_args, "no_cache", False):
         try:
             cached_result = cache.get(_file)
-            if cached_result is not None:
+            if (
+                cached_result is not None
+                and isinstance(cached_result, dict)
+                and cached_result.get("res")
+                and cached_result.get("file")
+                and cached_result.get("lexer_name")
+                and cached_result.get("tokens")
+                and cached_result.get("store")
+            ):
                 return (
                     cached_result["res"],
                     cached_result["file"],
