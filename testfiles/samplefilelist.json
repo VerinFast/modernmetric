@@ -22,5 +22,9 @@
     {
         "name": "test.ts",
         "path": "testfiles/test.ts"
+    },
+    {
+        "name": "__init__.py",
+        "path": "test/__init__.py"
     }
 ]

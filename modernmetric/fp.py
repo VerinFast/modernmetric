@@ -1,6 +1,8 @@
-import sys
 import chardet
+import os
+import sys
 from typing import Optional
+
 from pygments import lexers
 from pygments_tsx.tsx import patch_pygments
 from cachehash.main import Cache
@@ -50,10 +52,12 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             raise e
 
     try:
+        if os.path.getsize(_file) == 0:
+            return (res, _file, _lexer.name, [], store)
         with open(_file, "rb") as i:
             _cnt = i.read()
-            _enc = chardet.detect(_cnt)
-            _cnt = _cnt.decode(_enc["encoding"]).encode("utf-8")
+            _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
+            _cnt = _cnt.decode(_enc).encode("utf-8")
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
