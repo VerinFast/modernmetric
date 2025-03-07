@@ -1,16 +1,14 @@
 name: Run Tests
 
 on:
-    # Run this workflow for PRs into master or a release branch
-    pull_request:
-      branches:
-        - master
-        - release-*
-    # Run on tagged releases
     push:
-      tags:
-        - '*'
-    workflow_dispatch:
+        branches:
+          - main
+    pull_request:
+        branches:
+          - main
+    release:
+        types: [created]
 
 permissions:
     contents: write
