@@ -22,5 +22,10 @@
     {
         "name": "test.ts",
         "path": "testfiles/test.ts"
+    },
+    {
+        "name": "blank.py",
+        "path": "testfiles/blank.py"
     }
+
 ]
