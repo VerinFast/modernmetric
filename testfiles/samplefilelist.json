@@ -24,8 +24,7 @@
         "path": "testfiles/test.ts"
     },
     {
-        "name": "blank.py",
-        "path": "testfiles/blank.py"
+        "name": "__init__.py",
+        "path": "test/__init__.py"
     }
-
 ]
