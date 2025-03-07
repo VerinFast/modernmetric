@@ -53,7 +53,8 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
         with open(_file, "rb") as i:
             _cnt = i.read()
             _enc = chardet.detect(_cnt)
-            _cnt = _cnt.decode(_enc["encoding"]).encode("utf-8")
+            _file_encoding = _enc["encoding"] or "utf-8"  # fallback if None
+            _cnt = _cnt.decode(_file_encoding, errors="replace").encode("utf-8")
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
