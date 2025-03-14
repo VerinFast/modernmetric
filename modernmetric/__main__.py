@@ -194,8 +194,12 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
         ]
 
     for x in results:
-        oldpath = _args.oldfiles[x[1]]
-        _result["files"][oldpath] = x[0]
+        try:
+            oldpath = _args.oldfiles[x[1]]
+            _result["files"][oldpath] = x[0]
+        except KeyError:
+            # Key doesn't exist in _args.oldfiles, skip
+            pass
 
     for y in _overallMetrics:
         _result["overall"].update(
