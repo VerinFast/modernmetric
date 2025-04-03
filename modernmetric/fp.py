@@ -15,6 +15,8 @@ patch_pygments()
 
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
+    old_file = _file
+    _file = os.path.abspath(_file)
     """Process a file, using cachehash if available"""
     # Try to get cached result first
     if cache is not None and not getattr(_args, "no_cache", False):
@@ -81,7 +83,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
         result = (res, _file, _lexer.name, tokens, store)
         resDict = {
             "res": res,
-            "file": _file,
+            "file": old_file,
             "lexer_name": _lexer.name,
             "tokens": tokens,
             "store": store,
@@ -96,4 +98,4 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     except Exception as e:
         print(f"Error processing file {_file}: {e}", file=sys.stderr)
         tokens = []
-        return (res, _file, _lexer.name, tokens, store)
+        return (res, old_file, _lexer.name, tokens, store)
