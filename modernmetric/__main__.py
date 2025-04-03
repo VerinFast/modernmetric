@@ -212,18 +212,15 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                 y.get_results_global([x[res_key_store] for x in results])
             )  # noqa: E501
     else:
-        results = []
-        count = 0
         store_total = None
+        db_path = Path(Path.home(), _args.cache_dir, _args.cache_db)
+        if not db_path.parent.exists():
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+        cache = None if _args.no_cache else Cache(db_path, "modernmetric")
         for i, file in enumerate(_args.files):
-            result = process_file(file, _args, _importer)
+            result = file_process(file, _args, _importer, cache)
             if result[res_key_res] is not None:
-                if count < 5:
-                    print(f"Result: {result[res_key_res]}", file=sys.stderr)
-                    print(f"Result store: {result[res_key_store]}", file=sys.stderr)
-                count += 1
-                results.append(result[res_key_res])
-                _result["files"][result[res_key_file]] = result[res_key_res]
+                _result["files"][file] = result[res_key_res]
                 if store_total is None:
                     store_total = result[res_key_store]
                 else:
