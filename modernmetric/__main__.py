@@ -144,6 +144,7 @@ def ArgParser(custom_args=None):
                     RUNARGS.files.extend(data)
     return RUNARGS
 
+
 # process_file returns (res, _file, _lexer.name, tokens, store)
 RES_KEY_RES = 0
 RES_KEY_FILE = 1
@@ -159,6 +160,7 @@ def process_file(f, args, importer):
 
     cache = None if args.no_cache else Cache(db_path, "modernmetric")
     return file_process(f, args, importer, cache)
+
 
 # custom_args is an optional list of strings args,
 # e.g. ["--file=path/to/filelist.json"]
@@ -197,11 +199,9 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(f"Processing {file_count} file of {total_files}.", file=sys.stderr)
-    
+
     for y in _overallMetrics:
-        _result["overall"].update(
-            y.get_results_global([x for x in stores])
-        )
+        _result["overall"].update(y.get_results_global([x for x in stores]))
     for y in _overallCalc:
         _result["overall"].update(y.get_results(_result["overall"]))
     for m in get_modules_stats(_args, **_importer):
