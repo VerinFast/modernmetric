@@ -242,9 +242,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                                 # Otherwise, just overwrite or handle as needed
                                 store_total[metric_name][key] = value
         for y in _overallMetrics:
-            _result["overall"].update(
-                y.get_results_global([store_total])
-            )
+            _result["overall"].update(y.get_results_global([store_total]))
     for y in _overallCalc:
         _result["overall"].update(y.get_results(_result["overall"]))
     for m in get_modules_stats(_args, **_importer):
@@ -255,6 +253,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     if _args.output_file:
         with open(_args.output_file, "w") as f:
             f.write(json.dumps(_result, indent=2, sort_keys=True))
+
 
 if __name__ == "__main__":
     main()
