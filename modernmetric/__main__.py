@@ -1,7 +1,6 @@
 import argparse
 import json
 import textwrap
-import multiprocessing as mp
 from multiprocessing import Pool
 from functools import partial
 import sys
@@ -146,12 +145,11 @@ def ArgParser(custom_args=None):
     return RUNARGS
 
 # process_file returns (res, _file, _lexer.name, tokens, store)
-res_key_res = 0
-res_key_file = 1
-res_key_lexer = 2
-res_key_tokens = 3
-res_key_store = 4
-
+RES_KEY_RES = 0
+RES_KEY_FILE = 1
+RES_KEY_LEXER = 2
+RES_KEY_TOKENS = 3
+RES_KEY_STORE = 4
 
 
 def process_file(f, args, importer):
@@ -196,9 +194,9 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     total_files = len(_args.files)
     with Pool(processes=_args.jobs) as pool:
         for file_result in pool.imap_unordered(process_file_fn, _args.files):
-            stores.append(file_result[res_key_store])
-            _result["files"][file_result[res_key_file]] = file_result[res_key_res]
-            print(f"Processing {file_count} file of {total_files}." + _file, file=sys.stderr)
+            stores.append(file_result[RES_KEY_STORE])
+            _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
+            print(f"Processing {file_count} file of {total_files}.", file=sys.stderr)
     
     for y in _overallMetrics:
         _result["overall"].update(
