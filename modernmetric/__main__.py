@@ -157,7 +157,7 @@ def process_file(f, args, importer):
     db_path = Path(Path.home(), args.cache_dir, args.cache_db)
     if not db_path.parent.exists():
         db_path.parent.mkdir(parents=True, exist_ok=True)
-
+    print("File in", f)
     cache = None if args.no_cache else Cache(db_path, "modernmetric")
     return file_process(f, args, importer, cache)
 
@@ -194,10 +194,11 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
 
     file_count = 1
     total_files = len(_args.files)
-    print(f"Processing {_args.files} files.", file=sys.stderr)
+
     with Pool(processes=_args.jobs) as pool:
         for file_result in pool.imap_unordered(process_file_fn, _args.files):
             stores.append(file_result[RES_KEY_STORE])
+            print("File out:", file_result[RES_KEY_FILE], file=sys.stderr)
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(f"Processing {file_count} file of {total_files}.", file=sys.stderr)
             file_count += 1
