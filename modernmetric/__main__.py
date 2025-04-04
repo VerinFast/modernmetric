@@ -161,6 +161,7 @@ res_key_lexer = 2
 res_key_tokens = 3
 res_key_store = 4
 
+
 def process_file(f, args, importer):
     db_path = Path(Path.home(), args.cache_dir, args.cache_db)
     if not db_path.parent.exists():
