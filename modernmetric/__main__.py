@@ -203,9 +203,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                 pool.apply(process_file, args=(f, _args, _importer))
                 for f in _args.files
             ]
-        results = [ 
-            x[res_key_res] for x in results_total if x[res_key_res] is not None
-        ]
+        results = [x[res_key_res] for x in results_total if x[res_key_res] is not None]
         for x in results_total:
             _result["files"][x[res_key_file]] = x[res_key_res]
         for y in _overallMetrics:
