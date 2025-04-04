@@ -26,13 +26,14 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                 cached_result is not None
                 and isinstance(cached_result, dict)
                 and cached_result.get("res")
+                and cached_result.get("file")
                 and cached_result.get("lexer_name")
                 and cached_result.get("tokens")
                 and cached_result.get("store")
             ):
                 return (
                     cached_result["res"],
-                    old_file,
+                    cached_result["file"],
                     cached_result["lexer_name"],
                     cached_result["tokens"],
                     cached_result["store"],
@@ -46,15 +47,14 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
         _lexer = lexers.get_lexer_for_filename(_file)
     except Exception as e:
         if _args.ignore_lexer_errors:
-            # Printing to stderr since we write results to STDOUT
-            # print("Processing unknown file type: " + _file, file=sys.stderr)
-            return (res, _file, "unknown", [], store)
+            return (res, old_file, "unknown", [], store)
         else:
+            print("Processing unknown file type: " + _file, file=sys.stderr)
             raise e
 
     try:
         if os.path.getsize(_file) == 0:
-            return (res, _file, _lexer.name, [], store)
+            return (res, old_file, _lexer.name, [], store)
         with open(_file, "rb") as i:
             _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
