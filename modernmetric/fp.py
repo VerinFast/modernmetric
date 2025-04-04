@@ -79,7 +79,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                 res.update(x.get_results(res))
                 store.update(x.get_internal_store())
 
-        result = (res, _file, _lexer.name, tokens, store)
+        result = (res, old_file, _lexer.name, tokens, store)
         resDict = {
             "res": res,
             "file": old_file,
