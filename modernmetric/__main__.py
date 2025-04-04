@@ -1,8 +1,9 @@
 import argparse
 import json
-import os
 import textwrap
 import multiprocessing as mp
+from multiprocessing import Pool
+from functools import partial
 import sys
 from typing import Union
 from pathlib import Path
@@ -142,17 +143,7 @@ def ArgParser(custom_args=None):
                         RUNARGS.files.append(file["path"])
                 else:
                     RUNARGS.files.extend(data)
-
-    # Turn all paths to abs-paths right here
-    # RUNARGS.oldfiles = {}
-    # for x in RUNARGS.files:
-    #     RUNARGS.oldfiles[os.path.abspath(x)] = x
-    # RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
-
-
-# custom_args is an optional list of strings args,
-# e.g. ["--file=path/to/filelist.json"]
 
 # process_file returns (res, _file, _lexer.name, tokens, store)
 res_key_res = 0
@@ -160,6 +151,7 @@ res_key_file = 1
 res_key_lexer = 2
 res_key_tokens = 3
 res_key_store = 4
+
 
 
 def process_file(f, args, importer):
@@ -170,7 +162,8 @@ def process_file(f, args, importer):
     cache = None if args.no_cache else Cache(db_path, "modernmetric")
     return file_process(f, args, importer, cache)
 
-
+# custom_args is an optional list of strings args,
+# e.g. ["--file=path/to/filelist.json"]
 def main(custom_args=None, license_identifier: Union[int, str] = None):
 
     if license_identifier:
@@ -196,55 +189,21 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     _overallMetrics = get_modules_metrics(_args, **_importer)
     _overallCalc = get_modules_calculated(_args, **_importer)
 
-    # Only multiprocess if more than 1 job is requested
-    if _args.jobs > 1:
-        with mp.Pool(processes=_args.jobs) as pool:
-            results_total = [
-                pool.apply(process_file, args=(f, _args, _importer))
-                for f in _args.files
-            ]
-        results = [x[res_key_res] for x in results_total if x[res_key_res] is not None]
-        for x in results_total:
-            _result["files"][x[res_key_file]] = x[res_key_res]
-        for y in _overallMetrics:
-            _result["overall"].update(
-                y.get_results_global([x[res_key_store] for x in results])
-            )  # noqa: E501
-    else:
-        store_total = None
-        db_path = Path(Path.home(), _args.cache_dir, _args.cache_db)
-        if not db_path.parent.exists():
-            db_path.parent.mkdir(parents=True, exist_ok=True)
-        cache = None if _args.no_cache else Cache(db_path, "modernmetric")
-        for i, file in enumerate(_args.files):
-            result = file_process(file, _args, _importer, cache)
-            if result[res_key_res] is not None:
-                _result["files"][file] = result[res_key_res]
-                if store_total is None:
-                    store_total = result[res_key_store]
-                else:
-                    for metric_name, metric_data in result[res_key_store].items():
-                        # If `metric_name` isn't already in `store_total`, initialize it
-                        if metric_name not in store_total:
-                            store_total[metric_name] = {}
+    stores = []
+    process_file_fn = partial(process_file, args=_args, importer=_importer)
 
-                        # Now walk through each item in the sub-dict
-                        for key, value in metric_data.items():
-                            if isinstance(value, (int, float)):
-                                # If integer/float, accumulate
-                                store_total[metric_name][key] = (
-                                    store_total[metric_name].get(key, 0) + value
-                                )
-                            elif isinstance(value, list):
-                                # If a list, extend (or do whatever logic you need)
-                                if key not in store_total[metric_name]:
-                                    store_total[metric_name][key] = []
-                                store_total[metric_name][key].extend(value)
-                            else:
-                                # Otherwise, just overwrite or handle as needed
-                                store_total[metric_name][key] = value
-        for y in _overallMetrics:
-            _result["overall"].update(y.get_results_global([store_total]))
+    file_count = 1
+    total_files = len(_args.files)
+    with Pool(processes=_args.jobs) as pool:
+        for file_result in pool.imap_unordered(process_file_fn, _args.files):
+            stores.append(file_result[res_key_store])
+            _result["files"][file_result[res_key_file]] = file_result[res_key_res]
+            print(f"Processing {file_count} file of {total_files}." + _file, file=sys.stderr)
+    
+    for y in _overallMetrics:
+        _result["overall"].update(
+            y.get_results_global([x for x in stores])
+        )
     for y in _overallCalc:
         _result["overall"].update(y.get_results(_result["overall"]))
     for m in get_modules_stats(_args, **_importer):

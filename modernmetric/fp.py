@@ -48,7 +48,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     except Exception as e:
         if _args.ignore_lexer_errors:
             # Printing to stderr since we write results to STDOUT
-            print("Processing unknown file type: " + _file, file=sys.stderr)
+            # print("Processing unknown file type: " + _file, file=sys.stderr)
             return (res, _file, "unknown", [], store)
         else:
             raise e
@@ -56,7 +56,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     try:
         if os.path.getsize(_file) == 0:
             return (res, _file, _lexer.name, [], store)
-        with open(_file, "rb") as i:
+        with open(_file, "rb", encoding="utf-8", errors="ignore") as i:
             _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
