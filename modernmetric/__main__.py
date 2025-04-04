@@ -194,11 +194,13 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
 
     file_count = 1
     total_files = len(_args.files)
+    print(f"Processing {_args.files} files.", file=sys.stderr)
     with Pool(processes=_args.jobs) as pool:
         for file_result in pool.imap_unordered(process_file_fn, _args.files):
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(f"Processing {file_count} file of {total_files}.", file=sys.stderr)
+            file_count += 1
 
     for y in _overallMetrics:
         _result["overall"].update(y.get_results_global([x for x in stores]))
