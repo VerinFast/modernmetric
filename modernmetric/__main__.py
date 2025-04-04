@@ -199,7 +199,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     if _args.jobs > 1:
         with mp.Pool(processes=_args.jobs) as pool:
             results_total = [
-                pool.apply(process_file, args=(f, _args, _importer)) 
+                pool.apply(process_file, args=(f, _args, _importer))
                 for f in _args.files
             ]
         results = [ 
