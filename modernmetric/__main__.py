@@ -232,7 +232,9 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                         for key, value in metric_data.items():
                             if isinstance(value, (int, float)):
                                 # If integer/float, accumulate
-                                store_total[metric_name][key] = store_total[metric_name].get(key, 0) + value
+                                store_total[metric_name][key] = (
+                                    store_total[metric_name].get(key, 0) + value
+                                )
                             elif isinstance(value, list):
                                 # If a list, extend (or do whatever logic you need)
                                 if key not in store_total[metric_name]:
