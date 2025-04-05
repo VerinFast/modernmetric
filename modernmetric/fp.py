@@ -15,6 +15,8 @@ patch_pygments()
 
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
+    old_file = _file
+    _file = os.path.abspath(_file)
     """Process a file, using cachehash if available"""
     # Try to get cached result first
     if cache is not None and not getattr(_args, "no_cache", False):
@@ -45,15 +47,14 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
         _lexer = lexers.get_lexer_for_filename(_file)
     except Exception as e:
         if _args.ignore_lexer_errors:
-            # Printing to stderr since we write results to STDOUT
-            print("Processing unknown file type: " + _file, file=sys.stderr)
-            return (res, _file, "unknown", [], store)
+            return (res, old_file, "unknown", [], store)
         else:
+            print("Processing unknown file type: " + _file, file=sys.stderr)
             raise e
 
     try:
         if os.path.getsize(_file) == 0:
-            return (res, _file, _lexer.name, [], store)
+            return (res, old_file, _lexer.name, [], store)
         with open(_file, "rb") as i:
             _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
@@ -78,10 +79,10 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                 res.update(x.get_results(res))
                 store.update(x.get_internal_store())
 
-        result = (res, _file, _lexer.name, tokens, store)
+        result = (res, old_file, _lexer.name, tokens, store)
         resDict = {
             "res": res,
-            "file": _file,
+            "file": old_file,
             "lexer_name": _lexer.name,
             "tokens": tokens,
             "store": store,
@@ -96,4 +97,4 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     except Exception as e:
         print(f"Error processing file {_file}: {e}", file=sys.stderr)
         tokens = []
-        return (res, _file, _lexer.name, tokens, store)
+        return (res, old_file, _lexer.name, tokens, store)

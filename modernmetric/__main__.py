@@ -1,8 +1,9 @@
 import argparse
 import json
-import os
 import textwrap
-import multiprocessing as mp
+from multiprocessing import Pool
+from functools import partial
+import sys
 from typing import Union
 from pathlib import Path
 from cachehash.main import Cache
@@ -141,28 +142,27 @@ def ArgParser(custom_args=None):
                         RUNARGS.files.append(file["path"])
                 else:
                     RUNARGS.files.extend(data)
-
-    # Turn all paths to abs-paths right here
-    RUNARGS.oldfiles = {}
-    for x in RUNARGS.files:
-        RUNARGS.oldfiles[os.path.abspath(x)] = x
-    RUNARGS.files = [os.path.abspath(x) for x in RUNARGS.files]
     return RUNARGS
 
 
-# custom_args is an optional list of strings args,
-# e.g. ["--file=path/to/filelist.json"]
+# process_file returns (res, _file, _lexer.name, tokens, store)
+RES_KEY_RES = 0
+RES_KEY_FILE = 1
+RES_KEY_LEXER = 2
+RES_KEY_TOKENS = 3
+RES_KEY_STORE = 4
 
 
 def process_file(f, args, importer):
     db_path = Path(Path.home(), args.cache_dir, args.cache_db)
     if not db_path.parent.exists():
         db_path.parent.mkdir(parents=True, exist_ok=True)
-
     cache = None if args.no_cache else Cache(db_path, "modernmetric")
     return file_process(f, args, importer, cache)
 
 
+# custom_args is an optional list of strings args,
+# e.g. ["--file=path/to/filelist.json"]
 def main(custom_args=None, license_identifier: Union[int, str] = None):
 
     if license_identifier:
@@ -188,19 +188,26 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     _overallMetrics = get_modules_metrics(_args, **_importer)
     _overallCalc = get_modules_calculated(_args, **_importer)
 
-    with mp.Pool(processes=_args.jobs) as pool:
-        results = [
-            pool.apply(process_file, args=(f, _args, _importer)) for f in _args.files
-        ]
+    stores = []
+    process_file_fn = partial(process_file, args=_args, importer=_importer)
 
-    for x in results:
-        oldpath = _args.oldfiles[x[1]]
-        _result["files"][oldpath] = x[0]
+    file_count = 1
+    total_files = len(_args.files)
+
+    with Pool(processes=_args.jobs) as pool:
+        for file_result in pool.imap_unordered(process_file_fn, _args.files):
+            stores.append(file_result[RES_KEY_STORE])
+            _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
+            print(
+                f"\rModernMetric analyzing file {file_count} of {total_files}",
+                file=sys.stderr,
+                end="",
+            )
+            sys.stderr.flush()
+            file_count += 1
 
     for y in _overallMetrics:
-        _result["overall"].update(
-            y.get_results_global([x[4] for x in results])
-        )  # noqa: E501
+        _result["overall"].update(y.get_results_global([x for x in stores]))
     for y in _overallCalc:
         _result["overall"].update(y.get_results(_result["overall"]))
     for m in get_modules_stats(_args, **_importer):
