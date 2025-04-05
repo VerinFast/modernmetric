@@ -198,7 +198,12 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
         for file_result in pool.imap_unordered(process_file_fn, _args.files):
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
-            print(f"Processing {file_count} file of {total_files}.", file=sys.stderr)
+            print(
+                f"\rModernMetric analyzing file {file_count} of {total_files}", 
+                file=sys.stderr, 
+                end=""
+            )
+            sys.stderr.flush()
             file_count += 1
 
     for y in _overallMetrics:
