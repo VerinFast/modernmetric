@@ -199,9 +199,9 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(
-                f"\rModernMetric analyzing file {file_count} of {total_files}", 
-                file=sys.stderr, 
-                end=""
+                f"\rModernMetric analyzing file {file_count} of {total_files}",
+                file=sys.stderr,
+                end="",
             )
             sys.stderr.flush()
             file_count += 1
