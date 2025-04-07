@@ -194,7 +194,6 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     # file_count = 1
     total_files = len(_args.files)
 
-
     timeout_seconds = 360
 
     with Pool(processes=_args.jobs) as pool:
@@ -203,24 +202,25 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
             pool.apply_async(process_file, args=(file, _args, _importer))
             for file in _args.files
         ]
-        
+
         for idx, async_result in enumerate(async_results, start=1):
             try:
                 file_result = async_result.get(timeout=timeout_seconds)
                 stores.append(file_result[RES_KEY_STORE])
                 _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             except TimeoutError:
-                print(f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr)
+                print(
+                    f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr
+                )
                 # Optionally mark or log the file that timed out
                 continue
-            
+
             print(
-                f"\rModernMetric analyzing file {idx} of {total_files}", 
-                file=sys.stderr, 
-                end=""
+                f"\rModernMetric analyzing file {idx} of {total_files}",
+                file=sys.stderr,
+                end="",
             )
             sys.stderr.flush()
-
 
     for y in _overallMetrics:
         _result["overall"].update(y.get_results_global([x for x in stores]))
