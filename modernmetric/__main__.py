@@ -1,7 +1,7 @@
 import argparse
 import json
 import textwrap
-from multiprocessing import Pool
+from multiprocessing import Pool, TimeoutError
 from functools import partial
 import sys
 from typing import Union
@@ -212,7 +212,15 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                 print(
                     f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr
                 )
-                # Optionally mark or log the file that timed out
+                # Log the file that timed out
+                print(f"Timeout processing file: {async_result}", file=sys.stderr)
+                continue
+            except Exception as e:
+                # Handle any other exceptions that occur during processing
+                print(
+                    f"\rError processing file {idx} of {total_files}, {async_result}: {e}",
+                    file=sys.stderr,
+                )
                 continue
 
             print(
