@@ -191,43 +191,36 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     stores = []
     # process_file_fn = partial(process_file, args=_args, importer=_importer)
 
-    # file_count = 1
+    file_count = 1
     total_files = len(_args.files)
 
-    timeout_seconds = 360
+    timeout_seconds = 120
+
+    def get_file_result(async_result, idx, total_files, timeout_seconds):
+        try:
+            return async_result.get(timeout=timeout_seconds)
+        except TimeoutError:
+            print(f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr)
+            return None
 
     with Pool(processes=_args.jobs) as pool:
-        # Submit all tasks asynchronously
         async_results = [
             pool.apply_async(process_file, args=(file, _args, _importer))
             for file in _args.files
         ]
 
         for idx, async_result in enumerate(async_results, start=1):
-            try:
-                file_result = async_result.get(timeout=timeout_seconds)
-                stores.append(file_result[RES_KEY_STORE])
-                _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
-            except TimeoutError:
-                print(
-                    f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr
-                )
-                # Log the file that timed out
-                print(f"Timeout processing file: {async_result}", file=sys.stderr)
+            file_result = get_file_result(async_result, idx, total_files, timeout_seconds)
+            if file_result is None:
                 continue
-            except Exception as e:
-                # Handle any other exceptions that occur during processing
-                print(
-                    f"\rError processing file {idx} of {total_files}, {async_result}: {e}",
-                    file=sys.stderr,
-                )
-                continue
-
+            stores.append(file_result[RES_KEY_STORE])
+            _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(
-                f"\rModernMetric analyzing file {idx} of {total_files}",
+                f"\rModernMetric analyzing file {file_count} of {total_files}",
                 file=sys.stderr,
-                end="",
+                end=""
             )
+            file_count += 1
             sys.stderr.flush()
 
     for y in _overallMetrics:
