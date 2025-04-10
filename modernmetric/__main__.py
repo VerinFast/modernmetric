@@ -210,7 +210,9 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
         ]
 
         for idx, async_result in enumerate(async_results, start=1):
-            file_result = get_file_result(async_result, idx, total_files, timeout_seconds)
+            file_result = get_file_result(
+                async_result, idx, total_files, timeout_seconds
+            )
             if file_result is None:
                 continue
             stores.append(file_result[RES_KEY_STORE])
@@ -218,7 +220,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
             print(
                 f"\rModernMetric analyzing file {file_count} of {total_files}",
                 file=sys.stderr,
-                end=""
+                end="",
             )
             file_count += 1
             sys.stderr.flush()
