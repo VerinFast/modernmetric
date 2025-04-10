@@ -52,6 +52,12 @@ def ArgParser(custom_args=None):
         "--output_file", default=None, help="File to write the output to"
     )
     parser.add_argument(
+        "--file_timout",
+        default=120,
+        type=int,
+        help="Timeout in seconds for file processing",
+    )
+    parser.add_argument(
         "--warn_compiler",
         default=None,
         help="File(s) holding information about compiler warnings",
@@ -194,7 +200,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     file_count = 1
     total_files = len(_args.files)
 
-    timeout_seconds = 120
+    timeout_seconds = _args.file_timout
 
     def get_file_result(async_result, idx, total_files, timeout_seconds):
         try:
