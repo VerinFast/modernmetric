@@ -1,7 +1,7 @@
 import argparse
 import json
 import textwrap
-from multiprocessing import Pool
+from multiprocessing import Pool, TimeoutError
 from functools import partial
 import sys
 from typing import Union
@@ -50,6 +50,12 @@ def ArgParser(custom_args=None):
     )
     parser.add_argument(
         "--output_file", default=None, help="File to write the output to"
+    )
+    parser.add_argument(
+        "--file_timout",
+        default=120,
+        type=int,
+        help="Timeout in seconds for file processing",
     )
     parser.add_argument(
         "--warn_compiler",
@@ -189,13 +195,32 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     _overallCalc = get_modules_calculated(_args, **_importer)
 
     stores = []
-    process_file_fn = partial(process_file, args=_args, importer=_importer)
+    # process_file_fn = partial(process_file, args=_args, importer=_importer)
 
     file_count = 1
     total_files = len(_args.files)
 
+    timeout_seconds = _args.file_timout
+
+    def get_file_result(async_result, idx, total_files, timeout_seconds):
+        try:
+            return async_result.get(timeout=timeout_seconds)
+        except TimeoutError:
+            print(f"\rTimeout processing file {idx} of {total_files}", file=sys.stderr)
+            return None
+
     with Pool(processes=_args.jobs) as pool:
-        for file_result in pool.imap_unordered(process_file_fn, _args.files):
+        async_results = [
+            pool.apply_async(process_file, args=(file, _args, _importer))
+            for file in _args.files
+        ]
+
+        for idx, async_result in enumerate(async_results, start=1):
+            file_result = get_file_result(
+                async_result, idx, total_files, timeout_seconds
+            )
+            if file_result is None:
+                continue
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(
@@ -203,8 +228,8 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
                 file=sys.stderr,
                 end="",
             )
-            sys.stderr.flush()
             file_count += 1
+            sys.stderr.flush()
 
     for y in _overallMetrics:
         _result["overall"].update(y.get_results_global([x for x in stores]))
