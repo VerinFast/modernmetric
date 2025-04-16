@@ -1,4 +1,6 @@
 import httpx
+
+from importlib.metadata import version
 from typing import Union
 
 requestx = httpx.Client(http2=True, timeout=None)
@@ -25,12 +27,14 @@ def report(identifier: Union[int, str], product: str, die: bool = False):
         "Accept-Charset": "UTF-8",
     }
 
-    data = {"uuid": identifier, "product": product}
+    v = version("modernmetric")
+
+    data = {"uuid": identifier, "product": product, "version": v}
 
     response = None
     try:
         response = requestx.post(
-            f"https://logger.verinfast.com/logger?license=true&product={str(product)}",  # noqa: E501
+            f"https://logger.verinfast.com/logger?license=true&product={str(product)}&version={str(v)}",  # noqa: E501
             json=data,
             headers=headers,
         )
