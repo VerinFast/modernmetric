@@ -54,7 +54,6 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                     return (res, old_file, "unknown", [], store)
                 else:
                     raise e
-            
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
         _lexer = None
