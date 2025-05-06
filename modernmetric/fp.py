@@ -43,22 +43,39 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
 
     res = {}
     store = {}
-    try:
-        _lexer = lexers.get_lexer_for_filename(_file)
-    except Exception as e:
-        if _args.ignore_lexer_errors:
-            return (res, old_file, "unknown", [], store)
-        else:
-            print("Processing unknown file type: " + _file, file=sys.stderr)
-            raise e
 
     try:
-        if os.path.getsize(_file) == 0:
-            return (res, old_file, _lexer.name, [], store)
         with open(_file, "rb") as i:
-            _cnt = i.read()
+            try:
+                _cnt = i.read()
+            except Exception as e:
+                print("Error reading file: " + _file, file=sys.stderr)
+                if _args.ignore_lexer_errors:
+                    return (res, old_file, "unknown", [], store)
+                else:
+                    raise e
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
+        _lexer = None
+        try:
+            _lexer = lexers.guess_lexer_for_filename(_file, _cnt)
+        except Exception as e1:
+            try:
+                _lexer = lexers.guess_lexer(_cnt)
+            except Exception as e2:
+                try:
+                    _lexer = lexers.get_lexer_for_filename(_file, _cnt)
+                except Exception as e3:
+                    if _args.ignore_lexer_errors:
+                        return (res, old_file, "unknown", [], store)
+                    else:
+                        print("Processing unknown file type: " + _file, file=sys.stderr)
+                        print(e1)
+                        print(e2)
+                        raise e3
+
+        if os.path.getsize(_file) == 0:
+            return (res, old_file, _lexer.name, [], store)
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
