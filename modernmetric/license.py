@@ -1,5 +1,5 @@
 import httpx
-
+import urllib.parse
 from importlib.metadata import version
 from typing import Union
 
@@ -28,6 +28,8 @@ def report(identifier: Union[int, str], product: str, die: bool = False):
     }
 
     v = version("modernmetric")
+    v = urllib.parse.quote_plus(v)
+    product = urllib.parse.quote_plus(product)
 
     data = {"uuid": identifier, "product": product, "version": v}
 
