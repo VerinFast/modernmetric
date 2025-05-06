@@ -36,7 +36,7 @@ def report(identifier: Union[int, str], product: str, die: bool = False):
     response = None
     try:
         response = requestx.post(
-            f"https://logger.verinfast.com/logger?license=true&product={str(product)}&version={str(v)}",  # noqa: E501
+            f"https://logger.verinfast.com/logger?license=true&product={product}&version={v}",
             json=data,
             headers=headers,
         )
