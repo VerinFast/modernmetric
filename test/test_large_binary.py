@@ -16,6 +16,7 @@ def download_file(url, filepath):
             for chunk in response.iter_bytes():
                 file.write(chunk)
 
+
 def test_filelist_scan():
     start_time = time.time()
     curr_dir = os.path.dirname(os.path.abspath(__file__))
