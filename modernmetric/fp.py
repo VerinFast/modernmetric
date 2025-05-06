@@ -61,7 +61,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             except Exception as e2:
                 try:
                     _lexer = lexers.get_lexer_for_filename(_file, _cnt)
-                except Exception as e2:
+                except Exception as e3:
                     if _args.ignore_lexer_errors:
                         return (res, old_file, "unknown", [], store)
                     else:
