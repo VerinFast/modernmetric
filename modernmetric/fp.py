@@ -51,7 +51,6 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
-        
         _lexer = None
         try:
             _lexer = lexers.guess_lexer_for_filename(_file, _cnt)
