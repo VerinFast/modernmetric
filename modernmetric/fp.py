@@ -46,7 +46,15 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
 
     try:
         with open(_file, "rb") as i:
-            _cnt = i.read()
+            try:
+                _cnt = i.read()
+            except Exception as e:
+                print("Error reading file: " + _file, file=sys.stderr)
+                if _args.ignore_lexer_errors:
+                    return (res, old_file, "unknown", [], store)
+                else:
+                    raise e
+            
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
         _lexer = None
