@@ -45,8 +45,6 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     store = {}
 
     try:
-        if os.path.getsize(_file) == 0:
-            return (res, old_file, _lexer.name, [], store)
         with open(_file, "rb") as i:
             _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
@@ -68,6 +66,9 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                         print(e1)
                         print(e2)
                         raise e3
+
+        if os.path.getsize(_file) == 0:
+            return (res, old_file, _lexer.name, [], store)
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
