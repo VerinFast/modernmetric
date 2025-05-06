@@ -43,7 +43,6 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
 
     res = {}
     store = {}
-    
 
     try:
         if os.path.getsize(_file) == 0:
