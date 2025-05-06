@@ -9,6 +9,7 @@ from modernmetric.__main__ import main as modernmetric
 NODE_24_ZIP_URL = "https://github.com/nodejs/node/archive/refs/tags/v24.0.0.zip"
 TMP_PATH = "testfiles/node_24.zip"
 
+
 def download_file(url, filepath):
     with httpx.stream("GET", url) as response:
         with open(filepath, "wb") as file:
