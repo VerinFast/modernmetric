@@ -119,7 +119,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             return (res, old_file, _lexer.name, [], store)
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
-        tokens = list(_lexer.get_tokens(str(_cnt)))
+        tokens = list(_lexer.get_tokens(_cnt.decode()))
 
         if _args.dump:
             for x in tokens:
