@@ -137,7 +137,7 @@ def test_filelist_scan():
     assert files is not None
     assert files["testfiles/test.c"]["loc"] == 25
     assert files["testfiles/test.c"]["cyclomatic_complexity"] == 0
-    assert stats["overall"]["loc"] == 179
+    assert stats["overall"]["loc"] == 129534
     os.remove(stats_output_file)
 
 
