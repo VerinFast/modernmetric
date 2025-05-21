@@ -85,7 +85,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
             try:
                 _enc = chardet.detect(sample)["encoding"] or "utf-8"
-                print_time(f"Encoding detected for {_file}: {_enc}")
+                print_time(f"\rEncoding detected for {_file}: {_enc}")
                 _cnt = _cnt.decode(_enc)
             except Exception as e:
                 return handle_rejected_file(
