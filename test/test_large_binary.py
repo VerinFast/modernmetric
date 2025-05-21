@@ -6,32 +6,59 @@ import httpx
 
 from modernmetric.__main__ import main as modernmetric
 
-# NODE_24_ZIP_URL = "https://github.com/nodejs/node/archive/refs/tags/v24.0.0.zip"
-NODE_24_ZIP_URL = "https://nodejs.org/dist/v24.0.0/node-v24.0.0-linux-s390x.tar.xz"
+NODE_24_ZIP_URL = "https://github.com/nodejs/node/archive/refs/tags/v24.0.0.zip"
 TMP_PATH = "testfiles/node_24.zip"
 
 
 def download_file(url, filepath):
-    if os.path.exists(filepath):
-        print(f"File {filepath} already exists. Skipping download.")
-        return
     print(f"Downloading {url} to {filepath}")
+    with httpx.stream("GET", url, follow_redirects=True) as response:
+        with open(filepath, "wb") as file:
+            print(f"Response status code: {response.status_code}")
+            if response.status_code == 302:
+               # Handle redirection
+                location = response.headers.get("Location")
+                print(f"Redirected to {location}")
+            if response.status_code != 200:
+                raise Exception(f"Failed to download file: {response.status_code}")
+            if response.headers.get("Content-Length"):
+                total_length = int(response.headers.get("Content-Length"))
+                print(f"Total length: {total_length} bytes")
+            else:
+                total_length = None
+            if total_length:
+                downloaded = 0
+                for chunk in response.iter_raw():
+                    file.write(chunk)
+                    downloaded += len(chunk)
+                    done = int(50 * downloaded / total_length)
+                    print(f"\r[{'#' * done}{'.' * (50 - done)}] {downloaded}/{total_length} bytes", end="")
+            else:
+                print("No Content-Length header, downloading without progress")
+                # If no content length is provided, just download the file
+                # without showing progress
+                for chunk in response.iter_raw():
+                    file.write(chunk)
 
-    # Use httpx to download the file
+def wait_until_file_stable(path, timeout=30):
+    last_size = -1
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            current_size = os.path.getsize(path)
+            if current_size == last_size:
+                return
+            last_size = current_size
+        except FileNotFoundError:
+            pass
+        time.sleep(0.5)
+    raise TimeoutError("File did not become stable")
+
+def test_large_binary_scan():
     start_time = time.time()
-    with open(filepath, "wb") as file:
-        with httpx.stream("GET", url) as response:
-            for chunk in response.iter_bytes():
-                file.write(chunk)
-    duration = time.time() - start_time
-    print(f"Download completed in {duration:.2f} seconds")
-
-
-
-def test_filelist_scan():
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     download_file(NODE_24_ZIP_URL, TMP_PATH)
-    start_time = time.time()
+    wait_until_file_stable(TMP_PATH)
     project_root = os.path.dirname(curr_dir)
     stats_input_file = os.path.join(project_root, "testfiles", "samplefilelist2.json")
     stats_output_file = os.path.join(curr_dir, "test.stats.json")
@@ -47,4 +74,4 @@ def test_filelist_scan():
     os.remove(stats_output_file)
     duration = time.time() - start_time
     print(f"Big binary scan took: {duration:.2f} seconds")
-    assert duration < 100, "Scan took too long for large binary file"
+    assert duration < 300, "Scan took too long for large binary file"
