@@ -26,5 +26,9 @@
     {
         "name": "__init__.py",
         "path": "test/__init__.py"
+    },
+    {
+        "name": "big_python.py",
+        "path": "testfiles/big_python.py"
     }
 ]

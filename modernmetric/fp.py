@@ -11,7 +11,7 @@ from cachehash.main import Cache
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
-from modernmetric.config import MAX_FILE_SIZE
+import modernmetric.config as config
 
 patch_pygments()
 
@@ -22,14 +22,31 @@ def print_time(msg, start_time=start_time):
     elapsed_time = time.time() - start_time
     print(f"{msg} took {elapsed_time:.2f} seconds")
 
+def handle_rejected_file(_file, _args, old_file, err=None):
+    _lexer = None
+    res = {}
+    store = {}
+    lexer_name = "unknown"
+    try:
+        _lexer = lexers.get_lexer_for_filename(_file)
+        lexer_name = _lexer.name
+        if err:
+            raise err
+    except Exception as e:
+        if not _args.ignore_lexer_errors:
+            raise e
+        
+    return (res, old_file, lexer_name, [], store)
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
+    print_time("Starting file process")
     old_file = _file
     _file = os.path.abspath(_file)
     _lexer = None
     """Process a file, using cachehash if available"""
     # Try to get cached result first
     if cache is not None and not getattr(_args, "no_cache", False):
+        print_time("Checking cache")
         try:
             cached_result = cache.get(_file)
             if (
@@ -55,35 +72,32 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     store = {}
 
     try:
-        if os.path.getsize(_file) > MAX_FILE_SIZE:
-            lexer_name = "unknown"
-            try:
-                _lexer = lexers.get_lexer_for_filename(_file)
-                lexer_name = _lexer.name
-            except:
-                pass
-            if _lexer and lexer_name != "unknown":
-                try:
-                    with open(_file, "rb") as i:
-                        _cnt = i.read()
-                    _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
-                    _cnt = _cnt.decode(_enc).encode("utf-8")
-                    _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
-                    tokens = list(_lexer.get_tokens(str(_cnt)))
-                except Exception as e:
-                    print("Error reading file: " + _file, file=sys.stderr)
-                    if _args.ignore_lexer_errors:
-                        return (res, old_file, lexer_name, [], store)
-                    else:
-                        raise e
-
-            return (res, old_file, lexer_name, [], store)
+        if os.path.getsize(_file) > config.MAX_FILE_SIZE:
+            return handle_rejected_file(
+                _file, 
+                _args, 
+                old_file, 
+                err=ValueError("File too large")
+            )
         with open(_file, "rb") as i:
+            print_time("Reading file")
             _cnt = i.read()
-            _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
-            _cnt = _cnt.decode(_enc).encode("utf-8")
+            print_time("File read")
+            sample = _cnt[0:min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+            try:
+                _enc = chardet.detect(sample)["encoding"] or "utf-8"
+                print_time(f"Encoding detected: {_enc}")
+                _cnt = _cnt.decode(_enc).encode("utf-8")
+            except Exception as e:
+                return handle_rejected_file(
+                    _file, 
+                    _args, 
+                    old_file,
+                    err=ValueError("Encoding detection failed")
+                )
+        print_time("file re-encoded")
         _lexer = None
-        sample = _cnt[0:min(1000, len(_cnt))]
+        sample = _cnt[0:min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
         try:
             print_time("Trying guess_lexer_for_filename")
             _lexer = lexers.guess_lexer_for_filename(_file, str(sample))

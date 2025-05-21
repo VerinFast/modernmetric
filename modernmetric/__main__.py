@@ -53,7 +53,7 @@ def ArgParser(custom_args=None):
     )
     parser.add_argument(
         "--file_timeout",
-        default=120,
+        default=180,
         type=int,
         help="Timeout in seconds for file processing",
     )
