@@ -27,7 +27,7 @@ def download_file(url, filepath):
     print(f"Download completed in {duration:.2f} seconds")
 
 
-def test_filelist_scan():
+def test_large_binary():
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     download_file(NODE_24_ZIP_URL, TMP_PATH)
     start_time = time.time()
