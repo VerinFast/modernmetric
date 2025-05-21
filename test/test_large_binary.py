@@ -40,25 +40,11 @@ def download_file(url, filepath):
                 for chunk in response.iter_raw():
                     file.write(chunk)
 
-def wait_until_file_stable(path, timeout=30):
-    last_size = -1
-    start = time.time()
-    while time.time() - start < timeout:
-        try:
-            current_size = os.path.getsize(path)
-            if current_size == last_size:
-                return
-            last_size = current_size
-        except FileNotFoundError:
-            pass
-        time.sleep(0.5)
-    raise TimeoutError("File did not become stable")
 
 def test_large_binary_scan():
-    start_time = time.time()
     curr_dir = os.path.dirname(os.path.abspath(__file__))
+    start_time = time.time()
     download_file(NODE_24_ZIP_URL, TMP_PATH)
-    wait_until_file_stable(TMP_PATH)
     project_root = os.path.dirname(curr_dir)
     stats_input_file = os.path.join(project_root, "testfiles", "samplefilelist2.json")
     stats_output_file = os.path.join(curr_dir, "test.stats.json")
@@ -74,4 +60,4 @@ def test_large_binary_scan():
     os.remove(stats_output_file)
     duration = time.time() - start_time
     print(f"Big binary scan took: {duration:.2f} seconds")
-    assert duration < 300, "Scan took too long for large binary file"
+    assert duration < 100, "Scan took too long for large binary file"
