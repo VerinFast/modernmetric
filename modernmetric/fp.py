@@ -10,6 +10,7 @@ from cachehash.main import Cache
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
+from modernmetric.config import MAX_FILE_SIZE
 
 patch_pygments()
 
@@ -17,6 +18,7 @@ patch_pygments()
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     old_file = _file
     _file = os.path.abspath(_file)
+    _lexer = None
     """Process a file, using cachehash if available"""
     # Try to get cached result first
     if cache is not None and not getattr(_args, "no_cache", False):
@@ -45,26 +47,43 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     store = {}
 
     try:
-        with open(_file, "rb") as i:
+        if os.path.getsize(_file) > MAX_FILE_SIZE:
+            lexer_name = "unknown"
             try:
-                _cnt = i.read()
-            except Exception as e:
-                print("Error reading file: " + _file, file=sys.stderr)
-                if _args.ignore_lexer_errors:
-                    return (res, old_file, "unknown", [], store)
-                else:
-                    raise e
+                _lexer = lexers.get_lexer_for_filename(_file)
+                lexer_name = _lexer.name
+            except:
+                pass
+            if _lexer and lexer_name != "unknown":
+                try:
+                    with open(_file, "rb") as i:
+                        _cnt = i.read()
+                    _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
+                    _cnt = _cnt.decode(_enc).encode("utf-8")
+                    _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
+                    tokens = list(_lexer.get_tokens(str(_cnt)))
+                except Exception as e:
+                    print("Error reading file: " + _file, file=sys.stderr)
+                    if _args.ignore_lexer_errors:
+                        return (res, old_file, lexer_name, [], store)
+                    else:
+                        raise e
+
+            return (res, old_file, lexer_name, [], store)
+        with open(_file, "rb") as i:
+            _cnt = i.read()
             _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
             _cnt = _cnt.decode(_enc).encode("utf-8")
         _lexer = None
+        sample = _cnt[0:min(1000, len(_cnt))]
         try:
-            _lexer = lexers.guess_lexer_for_filename(_file, _cnt)
+            _lexer = lexers.guess_lexer_for_filename(_file, str(sample))
         except Exception as e1:
             try:
-                _lexer = lexers.guess_lexer(_cnt)
+                _lexer = lexers.guess_lexer(sample)
             except Exception as e2:
                 try:
-                    _lexer = lexers.get_lexer_for_filename(_file, _cnt)
+                    _lexer = lexers.get_lexer_for_filename(_file)
                 except Exception as e3:
                     if _args.ignore_lexer_errors:
                         return (res, old_file, "unknown", [], store)
@@ -78,7 +97,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             return (res, old_file, _lexer.name, [], store)
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
-        tokens = list(_lexer.get_tokens(_cnt))
+        tokens = list(_lexer.get_tokens(str(_cnt)))
 
         if _args.dump:
             for x in tokens:
@@ -114,4 +133,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     except Exception as e:
         print(f"Error processing file {_file}: {e}", file=sys.stderr)
         tokens = []
-        return (res, old_file, _lexer.name, tokens, store)
+        name = "None"
+        if _lexer:
+            name = _lexer.name
+        return (res, old_file, name, tokens, store)
