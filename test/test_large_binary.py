@@ -6,7 +6,7 @@ import httpx
 
 from modernmetric.__main__ import main as modernmetric
 
-NODE_24_ZIP_URL = "https://github.com/nodejs/node/archive/refs/tags/v24.0.0.zip"
+NODE_24_ZIP_URL = "https://nodejs.org/dist/v24.0.0/node-v24.0.0-linux-s390x.tar.xz"
 TMP_PATH = "testfiles/node_24.zip"
 
 
@@ -43,8 +43,8 @@ def download_file(url, filepath):
 
 def test_large_binary_scan():
     curr_dir = os.path.dirname(os.path.abspath(__file__))
-    start_time = time.time()
     download_file(NODE_24_ZIP_URL, TMP_PATH)
+    start_time = time.time()
     project_root = os.path.dirname(curr_dir)
     stats_input_file = os.path.join(project_root, "testfiles", "samplefilelist2.json")
     stats_output_file = os.path.join(curr_dir, "test.stats.json")
