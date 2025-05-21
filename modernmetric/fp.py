@@ -22,6 +22,7 @@ def print_time(msg, start_time=start_time):
     elapsed_time = time.time() - start_time
     print(f"{msg} took {elapsed_time:.2f} seconds")
 
+
 def handle_rejected_file(_file, _args, old_file, err=None):
     _lexer = None
     res = {}
@@ -35,8 +36,9 @@ def handle_rejected_file(_file, _args, old_file, err=None):
     except Exception as e:
         if not _args.ignore_lexer_errors:
             raise e
-        
+
     return (res, old_file, lexer_name, [], store)
+
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     print_time("Starting file process")
@@ -74,30 +76,24 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     try:
         if os.path.getsize(_file) > config.MAX_FILE_SIZE:
             return handle_rejected_file(
-                _file, 
-                _args, 
-                old_file, 
-                err=ValueError("File too large")
+                _file, _args, old_file, err=ValueError("File too large")
             )
         with open(_file, "rb") as i:
             print_time("Reading file")
             _cnt = i.read()
             print_time("File read")
-            sample = _cnt[0:min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+            sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
             try:
                 _enc = chardet.detect(sample)["encoding"] or "utf-8"
                 print_time(f"Encoding detected: {_enc}")
                 _cnt = _cnt.decode(_enc).encode("utf-8")
             except Exception as e:
                 return handle_rejected_file(
-                    _file, 
-                    _args, 
-                    old_file,
-                    err=ValueError("Encoding detection failed")
+                    _file, _args, old_file, err=ValueError("Encoding detection failed")
                 )
         print_time("file re-encoded")
         _lexer = None
-        sample = _cnt[0:min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+        sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
         try:
             print_time("Trying guess_lexer_for_filename")
             _lexer = lexers.guess_lexer_for_filename(_file, str(sample))
