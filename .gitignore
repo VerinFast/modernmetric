@@ -131,3 +131,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/settings.json
+testfiles/node_24.zip
+contributions.diff
+test/test.stats.json

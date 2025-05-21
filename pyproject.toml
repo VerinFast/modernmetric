@@ -54,9 +54,16 @@ modernmetric-test = "test.test_self_scan:main"
 line-length = 88
 target-version = ['py39', 'py310', 'py311']
 include = '\.pyi?$'
-extend-exclude = '''
-^/VERSION\.py$
+exclude = '''
+(
+    (
+          ^/VERSION\.py$
+        | ^/testfiles/big_python\.py$
+        | ^/env/.*
+    )
+)
 '''
+
 
 [tool.setuptools.packages.find]
 where = ["."]

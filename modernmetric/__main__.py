@@ -52,8 +52,8 @@ def ArgParser(custom_args=None):
         "--output_file", default=None, help="File to write the output to"
     )
     parser.add_argument(
-        "--file_timout",
-        default=120,
+        "--file_timeout",
+        default=180,
         type=int,
         help="Timeout in seconds for file processing",
     )
@@ -169,7 +169,7 @@ def process_file(f, args, importer):
 
 # custom_args is an optional list of strings args,
 # e.g. ["--file=path/to/filelist.json"]
-def main(custom_args=None, license_identifier: Union[int, str] = None):
+def main(custom_args=None, license_identifier: Union[int, str, None] = None):
 
     if license_identifier:
         report(identifier=license_identifier, product="modernmetric")
@@ -200,7 +200,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
     file_count = 1
     total_files = len(_args.files)
 
-    timeout_seconds = _args.file_timout
+    timeout_seconds = _args.file_timeout
 
     def get_file_result(async_result, idx, total_files, timeout_seconds):
         try:
@@ -224,7 +224,7 @@ def main(custom_args=None, license_identifier: Union[int, str] = None):
             stores.append(file_result[RES_KEY_STORE])
             _result["files"][file_result[RES_KEY_FILE]] = file_result[RES_KEY_RES]
             print(
-                f"\rModernMetric analyzing file {file_count} of {total_files}",
+                f"\rModernMetric analyzing file {file_count} of {total_files}\r",
                 file=sys.stderr,
                 end="",
             )

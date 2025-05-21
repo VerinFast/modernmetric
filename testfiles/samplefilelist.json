@@ -4,6 +4,10 @@
         "path": "testfiles/test.c"
     },
     {
+        "name": "test_kr.c",
+        "path": "testfiles/test_kr.c"
+    },
+    {
         "name": "test.go",
         "path": "testfiles/test.go"
     },
@@ -26,5 +30,9 @@
     {
         "name": "__init__.py",
         "path": "test/__init__.py"
+    },
+    {
+        "name": "big_python.py",
+        "path": "testfiles/big_python.py"
     }
 ]

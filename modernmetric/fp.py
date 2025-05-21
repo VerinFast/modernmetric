@@ -1,6 +1,7 @@
 import chardet
 import os
 import sys
+import time
 from typing import Optional
 
 from pygments import lexers
@@ -10,16 +11,46 @@ from cachehash.main import Cache
 from modernmetric.cls.modules import get_modules_calculated
 from modernmetric.cls.modules import get_modules_metrics
 from modernmetric.cls.importer.filtered import FilteredImporter
+import modernmetric.config as config
 
 patch_pygments()
 
+start_time = time.time()
+
+
+def print_time(msg, start_time=start_time):
+    if not config.DEBUG:
+        return
+    elapsed_time = time.time() - start_time
+    print(f"{msg} took {elapsed_time:.2f} seconds")
+
+
+def handle_rejected_file(_file, _args, old_file, err=None):
+    _lexer = None
+    res = {}
+    store = {}
+    lexer_name = "unknown"
+    try:
+        _lexer = lexers.get_lexer_for_filename(_file)
+        lexer_name = _lexer.name
+        if err:
+            raise err
+    except Exception as e:
+        if not _args.ignore_lexer_errors:
+            raise e
+
+    return (res, old_file, lexer_name, [], store)
+
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
+    print_time("Starting file process")
     old_file = _file
     _file = os.path.abspath(_file)
+    _lexer = None
     """Process a file, using cachehash if available"""
     # Try to get cached result first
     if cache is not None and not getattr(_args, "no_cache", False):
+        print_time("Checking cache")
         try:
             cached_result = cache.get(_file)
             if (
@@ -43,22 +74,51 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
 
     res = {}
     store = {}
-    try:
-        _lexer = lexers.get_lexer_for_filename(_file)
-    except Exception as e:
-        if _args.ignore_lexer_errors:
-            return (res, old_file, "unknown", [], store)
-        else:
-            print("Processing unknown file type: " + _file, file=sys.stderr)
-            raise e
 
     try:
+        if os.path.getsize(_file) > config.MAX_FILE_SIZE:
+            return handle_rejected_file(
+                _file, _args, old_file, err=ValueError("File too large")
+            )
+        with open(_file, "rb") as i:
+            print_time("Reading file")
+            _cnt = i.read()
+            print_time("File read")
+            sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+            try:
+                _enc = chardet.detect(sample)["encoding"] or "utf-8"
+                print_time(f"\rEncoding detected for {_file}: {_enc}")
+                _cnt = _cnt.decode(_enc)
+            except Exception as e:
+                return handle_rejected_file(
+                    _file, _args, old_file, err=ValueError("Encoding detection failed")
+                )
+        print_time("file re-encoded")
+        _lexer = None
+        sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+        try:
+            print_time("Trying guess_lexer_for_filename")
+            _lexer = lexers.guess_lexer_for_filename(_file, str(sample))
+        except Exception as e1:
+            try:
+                print_time("Trying guess_lexer")
+                _lexer = lexers.guess_lexer(sample)
+            except Exception as e2:
+                try:
+                    print_time("Trying get_lexer_for_filename")
+                    _lexer = lexers.get_lexer_for_filename(_file)
+                except Exception as e3:
+                    print_time("Failing")
+                    if _args.ignore_lexer_errors:
+                        return (res, old_file, "unknown", [], store)
+                    else:
+                        print("Processing unknown file type: " + _file, file=sys.stderr)
+                        print(e1)
+                        print(e2)
+                        raise e3
+
         if os.path.getsize(_file) == 0:
             return (res, old_file, _lexer.name, [], store)
-        with open(_file, "rb") as i:
-            _cnt = i.read()
-            _enc = chardet.detect(_cnt)["encoding"] or "utf-8"
-            _cnt = _cnt.decode(_enc).encode("utf-8")
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
         tokens = list(_lexer.get_tokens(_cnt))
@@ -97,4 +157,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     except Exception as e:
         print(f"Error processing file {_file}: {e}", file=sys.stderr)
         tokens = []
-        return (res, old_file, _lexer.name, tokens, store)
+        name = "None"
+        if _lexer:
+            name = _lexer.name
+        return (res, old_file, name, tokens, store)
