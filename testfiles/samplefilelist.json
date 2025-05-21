@@ -4,6 +4,10 @@
         "path": "testfiles/test.c"
     },
     {
+        "name": "test_kr.c",
+        "path": "testfiles/test_kr.c"
+    },
+    {
         "name": "test.go",
         "path": "testfiles/test.go"
     },

@@ -85,8 +85,8 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
             try:
                 _enc = chardet.detect(sample)["encoding"] or "utf-8"
-                print_time(f"Encoding detected: {_enc}")
-                _cnt = _cnt.decode(_enc).encode("utf-8")
+                print_time(f"Encoding detected for {_file}: {_enc}")
+                _cnt = _cnt.decode(_enc)
             except Exception as e:
                 return handle_rejected_file(
                     _file, _args, old_file, err=ValueError("Encoding detection failed")
@@ -119,7 +119,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             return (res, old_file, _lexer.name, [], store)
 
         _localImporter = {k: FilteredImporter(v, _file) for k, v in _importer.items()}
-        tokens = list(_lexer.get_tokens(str(_cnt)))
+        tokens = list(_lexer.get_tokens(_cnt))
 
         if _args.dump:
             for x in tokens:
