@@ -26,9 +26,10 @@ def download_file(url, filepath):
     duration = time.time() - start_time
     print(f"Download completed in {duration:.2f} seconds")
 
+
 def test_filelist_scan():
     curr_dir = os.path.dirname(os.path.abspath(__file__))
-    # download_file(NODE_24_ZIP_URL, TMP_PATH)
+    download_file(NODE_24_ZIP_URL, TMP_PATH)
     start_time = time.time()
     project_root = os.path.dirname(curr_dir)
     stats_input_file = os.path.join(project_root, "testfiles", "samplefilelist2.json")
@@ -42,7 +43,7 @@ def test_filelist_scan():
     assert files["testfiles/test.c"]["loc"] == 25
     assert files["testfiles/test.c"]["cyclomatic_complexity"] == 0
     assert stats["overall"]["loc"] == 179
-    # os.remove(stats_output_file)
+    os.remove(stats_output_file)
     duration = time.time() - start_time
     print(f"Big binary scan took: {duration:.2f} seconds")
     assert duration < 100, "Scan took too long for large binary file"
