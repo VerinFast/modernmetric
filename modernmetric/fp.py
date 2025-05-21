@@ -23,7 +23,6 @@ def print_time(msg, start_time=start_time):
     print(f"{msg} took {elapsed_time:.2f} seconds")
 
 
-
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
     old_file = _file
     _file = os.path.abspath(_file)
