@@ -16,7 +16,6 @@ def download_file(url, filepath):
         print(f"File {filepath} already exists. Skipping download.")
         return
     print(f"Downloading {url} to {filepath}")
-    
     # Use httpx to download the file
     start_time = time.time()
     with open(filepath, "wb") as file:
