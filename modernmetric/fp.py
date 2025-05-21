@@ -1,6 +1,7 @@
 import chardet
 import os
 import sys
+import time
 from typing import Optional
 
 from pygments import lexers
@@ -13,6 +14,12 @@ from modernmetric.cls.importer.filtered import FilteredImporter
 from modernmetric.config import MAX_FILE_SIZE
 
 patch_pygments()
+
+start_time = time.time()
+def print_time(msg, start_time=start_time):
+    elapsed_time = time.time() - start_time
+    print(f"{msg} took {elapsed_time:.2f} seconds")
+
 
 
 def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
@@ -77,14 +84,18 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
         _lexer = None
         sample = _cnt[0:min(1000, len(_cnt))]
         try:
+            print_time("Trying guess_lexer_for_filename")
             _lexer = lexers.guess_lexer_for_filename(_file, str(sample))
         except Exception as e1:
             try:
+                print_time("Trying guess_lexer")
                 _lexer = lexers.guess_lexer(sample)
             except Exception as e2:
                 try:
+                    print_time("Trying get_lexer_for_filename")
                     _lexer = lexers.get_lexer_for_filename(_file)
                 except Exception as e3:
+                    print_time("Failing")
                     if _args.ignore_lexer_errors:
                         return (res, old_file, "unknown", [], store)
                     else:
