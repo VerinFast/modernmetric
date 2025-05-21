@@ -7,7 +7,7 @@ import httpx
 from modernmetric.__main__ import main as modernmetric
 
 # NODE_24_ZIP_URL = "https://github.com/nodejs/node/archive/refs/tags/v24.0.0.zip"
-NODE_24_ZIP_URL ="https://nodejs.org/dist/v24.0.0/node-v24.0.0-linux-s390x.tar.xz"
+NODE_24_ZIP_URL = "https://nodejs.org/dist/v24.0.0/node-v24.0.0-linux-s390x.tar.xz"
 TMP_PATH = "testfiles/node_24.zip"
 
 
