@@ -16,6 +16,8 @@ from modernmetric.config import MAX_FILE_SIZE
 patch_pygments()
 
 start_time = time.time()
+
+
 def print_time(msg, start_time=start_time):
     elapsed_time = time.time() - start_time
     print(f"{msg} took {elapsed_time:.2f} seconds")
