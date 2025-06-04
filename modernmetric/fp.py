@@ -112,7 +112,7 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
             if _args.ignore_lexer_errors:
                 return (res, old_file, "unknown", [], store)
             else:
-                raise ValueError("No lexer found for file: " + _file) 
+                raise ValueError("No lexer found for file: " + _file)
 
         if os.path.getsize(_file) == 0:
             return (res, old_file, _lexer.name, [], store)
