@@ -95,27 +95,24 @@ def file_process(_file, _args, _importer, cache: Optional[Cache] = None):
                 )
         print_time("file re-encoded")
         _lexer = None
-        sample = _cnt[0 : min(config.ENCODING_SAMPLE_SIZE, len(_cnt))]
+
         try:
             print_time("Trying guess_lexer_for_filename")
-            _lexer = lexers.guess_lexer_for_filename(_file, str(sample))
-        except Exception as e1:
-            try:
-                print_time("Trying guess_lexer")
-                _lexer = lexers.guess_lexer(sample)
-            except Exception as e2:
-                try:
-                    print_time("Trying get_lexer_for_filename")
-                    _lexer = lexers.get_lexer_for_filename(_file)
-                except Exception as e3:
-                    print_time("Failing")
-                    if _args.ignore_lexer_errors:
-                        return (res, old_file, "unknown", [], store)
-                    else:
-                        print("Processing unknown file type: " + _file, file=sys.stderr)
-                        print(e1)
-                        print(e2)
-                        raise e3
+            _lexer = lexers.get_lexer_for_filename(_file)
+        except Exception as e:
+            print_time("Failing")
+            if _args.ignore_lexer_errors:
+                return (res, old_file, "unknown", [], store)
+            else:
+                print("Processing unknown file type: " + _file, file=sys.stderr)
+                print(e)
+                raise e
+        # If exception did not occur, still make sure we have a lexer
+        if _lexer is None:
+            if _args.ignore_lexer_errors:
+                return (res, old_file, "unknown", [], store)
+            else:
+                raise ValueError("No lexer found for file: " + _file)
 
         if os.path.getsize(_file) == 0:
             return (res, old_file, _lexer.name, [], store)
