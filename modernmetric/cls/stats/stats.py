@@ -32,6 +32,8 @@ class MetricBaseStatsAverage(MetricBaseStats):
             metrics["stats"]["median"][k] = statistics.median(_list)
             metrics["stats"]["max"][k] = max(_list)
             metrics["stats"]["min"][k] = min(_list)
-            if len(metrics["files"]) > 1:
+            if len(_list) > 1:
                 metrics["stats"]["sd"][k] = statistics.stdev(_list)
+            else:
+                metrics["stats"]["sd"][k] = 0.0
         return super().get_results(metrics, files="files", overall="overall")
