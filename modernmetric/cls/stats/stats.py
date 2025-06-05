@@ -21,8 +21,7 @@ class MetricBaseStatsAverage(MetricBaseStats):
         metrics["stats"]["mean"] = {}
         metrics["stats"]["max"] = {}
         metrics["stats"]["min"] = {}
-        if len(metrics["files"]) > 1:
-            metrics["stats"]["sd"] = {}
+        metrics["stats"]["sd"] = {}
         metrics["stats"]["median"] = {}
         for k in _keylist:
             _list = self._getInputList(metrics[files], k)
