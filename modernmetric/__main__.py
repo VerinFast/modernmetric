@@ -22,8 +22,7 @@ def ArgParser(custom_args=None):
         formatter_class=argparse.RawTextHelpFormatter,
         prog="modernmetric",
         description="Calculate code metrics in various languages",
-        epilog=textwrap.dedent(
-            """
+        epilog=textwrap.dedent("""
         Currently you could import files of the following types for --warn_* or --coverage  # noqa: E501
 
         Following information can be read
@@ -45,8 +44,7 @@ def ArgParser(custom_args=None):
                  "content": <content>,
                  "severity": <severity>
              }
-        """
-        ),
+        """),
     )
     parser.add_argument(
         "--output_file", default=None, help="File to write the output to"
