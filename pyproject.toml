@@ -4,7 +4,6 @@ requires = [
     "setuptools",
     "setuptools_scm[toml]>=6.0",
     "build",
-    "hatch-requirements-txt"
 ]
 build-backend = "hatchling.build"
 
@@ -17,7 +16,7 @@ description = "Calculate code metrics in various languages"
 readme = "README.md"
 license = "CC-BY-NC-4.0"
 license-files = ["LICENSE"]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -32,13 +31,21 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Quality Assurance",
 ]
-dynamic = ["dependencies", "version"]
+dependencies = [
+    "chardet>=5.2.0",
+    "httpx[http2]~=0.28.1",
+    "pygments>=2.19.2",
+    "pygments-tsx>=1.0.3",
+    "pygount>=3.1.1",
+    "cachehash>=1.1.3",
+]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
-    "black>=24.1.1",
-    "pytest",
-    "pytest-cov"
+    "black>=26.1.0",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0"
 ]
 
 [project.scripts]
@@ -52,7 +59,7 @@ modernmetric-test = "test.test_self_scan:main"
 
 [tool.black]
 line-length = 88
-target-version = ['py39', 'py310', 'py311']
+target-version = ['py311', 'py312', 'py313']
 include = '\.pyi?$'
 exclude = '''
 (
@@ -71,6 +78,3 @@ include = ["modernmetric*", "test*"]
 
 [tool.hatch.version]
 path = "VERSION.py"
-
-[tool.hatch.metadata.hooks.requirements_txt]
-files = ["requirements.txt"]
