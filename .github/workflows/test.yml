@@ -42,7 +42,7 @@ jobs:
         strategy:
           matrix:
             os: [ubuntu-latest]
-            python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.x"]
+            python-version: ["3.11", "3.12", "3.13", "3.14"]
         runs-on: ${{ matrix.os }}
 
         steps:
@@ -57,7 +57,7 @@ jobs:
           uses: actions/cache@v3
           with:
             path: ~/.cache/pip
-            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
             restore-keys: |
                 ${{ runner.os }}-pip-
 
@@ -66,7 +66,7 @@ jobs:
           run: |
             python3 -m pip install --upgrade pip
             python3 -m pip install build hatchling
-            python3 -m pip install -e .
+            python3 -m pip install -e ".[dev]"
 
         - name: Run Pytest with coverage
           run: pytest --cov --cov-report=xml
