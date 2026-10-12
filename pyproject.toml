@@ -14,14 +14,18 @@ authors = [
 ]
 description = "Calculate code metrics in various languages"
 readme = "README.md"
-license = "CC-BY-NC-4.0"
-license-files = ["LICENSE"]
+# Source-available, not open source: use it, copy it, modify it — but do not
+# offer it to others as a hosted or managed service. Full text in LICENSE.
+# Portions derive from earlier BSD-2-Clause work — see BSD_LICENSE, which is
+# retained and still governs those portions.
+license = "Elastic-2.0"
+license-files = ["LICENSE", "BSD_LICENSE"]
 requires-python = ">=3.11"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
-    "License :: Free for non-commercial use",
+    "License :: Other/Proprietary License",
     "Natural Language :: English",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3 :: Only",
